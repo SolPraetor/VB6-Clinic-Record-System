@@ -1,0 +1,480 @@
+Option Explicit
+
+' General
+Dim cn As ADODB.Connection
+Dim rs As ADODB.Recordset
+Dim cnArchive As ADODB.Connection
+Dim rsArchive As ADODB.Recordset
+Dim SelectedPatientID As Long
+Public OpenLogOnLoad As Boolean
+
+'Necessary Codes
+Public Sub LoadMedicineCombo(cbo As ComboBox)
+    Dim rsMed As ADODB.Recordset
+    Set rsMed = New ADODB.Recordset
+
+    If cn Is Nothing Then
+        Set cn = New ADODB.Connection
+        cn.Open "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & App.Path & "\ClinicRecord.mdb"
+    End If
+
+    rsMed.CursorLocation = adUseClient
+    rsMed.Open "SELECT MedName FROM medicine_master ORDER BY MedName ASC", _
+               cn, adOpenStatic, adLockReadOnly
+
+    cbo.Clear
+    Do While Not rsMed.EOF
+        cbo.AddItem rsMed!MedName
+        rsMed.MoveNext
+    Loop
+    
+        cboMedicine.ListIndex = -1
+
+    rsMed.Close
+    Set rsMed = Nothing
+End Sub
+
+Private Sub cmdReport_Click()
+    frmReport.Show
+End Sub
+
+Private Sub Command1_Click()
+    LoadMedicineCombo cboMedicine
+End Sub
+
+Private Sub Form_Load()
+    fraAddPatient.Visible = False
+    fraRemovePatient.Visible = False
+    fraPrescription.Visible = False
+    fraPatientLog.Visible = False
+    cmdPConfirm.Enabled = False
+
+    If OpenLogOnLoad Then
+        fraPatientLog.Visible = True
+    Else
+        fraMain.Visible = True
+    End If
+
+    Set cn = New ADODB.Connection
+    cn.Open "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & App.Path & "\ClinicRecord.mdb"
+
+    Set rs = New ADODB.Recordset
+    rs.Open "SELECT * FROM patient_master", cn, adOpenDynamic, adLockOptimistic
+
+    LoadMedicineCombo cboMedicine
+    
+    cboSex.Clear
+    cboSex.AddItem "Male"
+    cboSex.AddItem "Female"
+    cboSex.ListIndex = 0
+
+    If rs.RecordCount > 0 Then
+        rs.MoveFirst
+        ShowRecord
+    End If
+
+    dtpDOB.MaxDate = Date
+    dtpDOB.MinDate = DateAdd("yyyy", -120, Date)
+    
+End Sub
+
+Private Sub ShowFrame(fra As Frame)
+    fraAddPatient.Visible = False
+    fraRemovePatient.Visible = False
+    fraPatientLog.Visible = False
+    fraPrescription.Visible = False
+    fra.Visible = True
+End Sub
+
+Private Sub ShowRecord()
+    If rs Is Nothing Then Exit Sub
+    If rs.EOF Or rs.BOF Then Exit Sub
+
+    txtName.Text = rs!Name
+    txtAge.Text = IIf(IsNull(rs!age), "", rs!age)
+    If Not IsNull(rs!dob) Then
+        dtpDOB.Value = rs!dob
+    Else
+        dtpDOB.Value = Date
+    End If
+    
+    If Not IsNull(rs!Sex) Then
+        If rs!Sex = "Male" Then
+            cboSex.ListIndex = 0
+        ElseIf rs!Sex = "Female" Then
+            cboSex.ListIndex = 1
+        Else
+            cboSex.ListIndex = -1
+        End If
+    Else
+        cboSex.ListIndex = -1
+    End If
+    
+    txtAddress.Text = rs!Address
+    txtAllergy.Text = rs!Allergy
+    txtCondition.Text = rs!Condition
+    txtContact.Text = rs!contact
+    txtComplain.Text = rs!Complain
+    txtTreatment.Text = IIf(IsNull(rs!Treatment), "", rs!Treatment)
+    txtDiagnosis.Text = IIf(IsNull(rs!Diagnosis), "", rs!Diagnosis)
+End Sub
+
+Private Sub ClearFields()
+    txtName.Text = ""
+    txtAge.Text = ""
+    dtpDOB.Value = Date
+    txtAddress.Text = ""
+    cboSex.ListIndex = -1
+    txtAllergy.Text = ""
+    txtCondition.Text = ""
+    txtContact.Text = ""
+    txtComplain.Text = ""
+    lblSelectedID.Caption = "Selected Patient: None"
+    SelectedPatientID = 0
+    cmdPConfirm.Enabled = False
+End Sub
+
+Private Function GetNextPatientID() As Long
+    Dim rsID As ADODB.Recordset
+    Set rsID = New ADODB.Recordset
+
+    rsID.Open "SELECT MAX(ID) AS MaxID FROM patient_master", cn, adOpenForwardOnly, adLockReadOnly
+    If rsID.EOF Or IsNull(rsID!MaxID) Then
+        GetNextPatientID = 1
+    Else
+        GetNextPatientID = rsID!MaxID + 1
+    End If
+    rsID.Close
+    Set rsID = Nothing
+End Function
+'Command Codes
+Private Sub cmdLogout_Click()
+    If MsgBox("Are you sure you want to log out?", vbYesNo + vbQuestion) = vbYes Then
+        Unload Me
+        frmLogin.Show
+        MsgBox "Successfully Logged Out!"
+    End If
+End Sub
+
+Private Sub cmdAddPatient_Click()
+    ShowFrame fraAddPatient
+    ClearFields
+    txtID.Text = GetNextPatientID
+End Sub
+
+Private Sub cmdRemovePatient_Click()
+    ShowFrame fraRemovePatient
+    ClearFields
+End Sub
+
+Private Sub cmdPrescription_Click()
+    ShowFrame fraPrescription
+    ClearFields
+End Sub
+
+Private Sub cmdPatientLog_Click()
+    ShowFrame fraPatientLog
+    ClearFields
+End Sub
+
+
+Private Sub cmdInv_Click()
+    frmMedicineInventory.Show
+End Sub
+
+Private Sub cmdAddConfirm_Click()
+    Set rs = New ADODB.Recordset
+    rs.Open "patient_master", cn, adOpenDynamic, adLockOptimistic
+
+    If MsgBox("Are you sure you want to add this patient record?", vbYesNo + vbQuestion) = vbNo Then
+        rs.CancelUpdate
+        Exit Sub
+    End If
+    
+    Dim contact As String
+    contact = Trim(txtContact.Text)
+
+    If contact <> "" And Not contact Like "09#########" Then
+        MsgBox "Invalid contact number format.", vbExclamation
+        txtContact.SetFocus
+        Exit Sub
+    End If
+    
+    rs.AddNew
+    rs!Name = txtName.Text
+    If IsNumeric(txtAge.Text) And Val(txtAge.Text) >= 0 Then rs!age = CLng(txtAge.Text)
+    rs!dob = dtpDOB.Value
+    rs!Address = txtAddress.Text
+    rs!Sex = cboSex.Text
+    rs!Allergy = txtAllergy.Text
+    rs!Condition = txtCondition.Text
+    rs!contact = txtContact.Text
+    rs!Complain = txtComplain.Text
+
+    rs.Update
+    MsgBox "Patient record saved successfully!"
+    rs.MoveLast
+    ShowRecord
+    txtID.Text = GetNextPatientID
+    ClearFields
+    ShowFrame fraAddPatient
+End Sub
+
+Private Sub cmdReturn_Click()
+    fraAddPatient.Visible = False
+End Sub
+
+Private Sub cmdSelect_Click()
+    If Trim(txtPID.Text) = "" Then
+        MsgBox "Please enter a Patient ID to select.", vbExclamation
+        Exit Sub
+    End If
+    If Not IsNumeric(txtPID.Text) Then
+        MsgBox "ID must be numeric.", vbExclamation
+        Exit Sub
+    End If
+
+    SelectedPatientID = CLng(txtPID.Text)
+    Set rs = New ADODB.Recordset
+    rs.Open "SELECT * FROM patient_master WHERE ID = " & SelectedPatientID, cn, adOpenDynamic, adLockOptimistic
+
+    If rs.EOF Then
+        MsgBox "No patient found with that ID.", vbInformation
+        cmdPConfirm.Enabled = False
+        Exit Sub
+    End If
+
+    ShowRecord
+    lblSelectedID.Caption = "Selected Patient: " & rs!Name
+    cmdPConfirm.Enabled = True
+End Sub
+
+Private Sub cmdPEdit_Click()
+    frmEditData.OpenPrescriptionOnLoad = True
+    frmEditData.Show
+    frmUserDB.Hide
+End Sub
+
+Private Sub cmdPConfirm_Click()
+    If SelectedPatientID = 0 Then
+        MsgBox "Please select a patient first using the Select button.", vbExclamation
+        Exit Sub
+    End If
+
+    Set rs = New ADODB.Recordset
+    rs.Open "SELECT * FROM patient_master WHERE ID = " & SelectedPatientID, cn, adOpenDynamic, adLockOptimistic
+
+    If rs.EOF Then
+        MsgBox "Patient record no longer exists.", vbCritical
+        Exit Sub
+    End If
+
+    If Not IsNull(rs!Medicine) Or Not IsNull(rs!Treatment) Or Not IsNull(rs!Diagnosis) Then
+        MsgBox "This patient already has a prescription. Editing is not allowed in this section.", vbExclamation
+        rs.Close
+        Set rs = Nothing
+        Exit Sub
+    End If
+
+    If cboMedicine.Text = "" Then
+        MsgBox "Please select a medicine.", vbExclamation
+        Exit Sub
+    End If
+
+    rs!Medicine = cboMedicine.Text
+    rs!Treatment = txtTreatment.Text
+    rs!Diagnosis = txtDiagnosis.Text
+
+    If MsgBox("Are you sure you want to save this patient's prescription?", vbYesNo + vbQuestion) = vbNo Then
+        rs.CancelUpdate
+        Exit Sub
+    End If
+
+    rs.Update
+
+    Dim rsStock As ADODB.Recordset
+    Set rsStock = New ADODB.Recordset
+    rsStock.Open "SELECT * FROM medicine_master WHERE MedName='" & Replace(cboMedicine.Text, "'", "''") & "'", cn, adOpenDynamic, adLockOptimistic
+
+    If Not rsStock.EOF Then
+        If rsStock!StockQty <= 0 Then
+            MsgBox "Medicine is OUT OF STOCK!", vbCritical
+            rsStock.Close
+            Set rsStock = Nothing
+            Exit Sub
+        End If
+        rsStock!StockQty = rsStock!StockQty - 1
+        rsStock.Update
+    End If
+
+    rsStock.Close
+    Set rsStock = Nothing
+
+    ShowRecord
+    ClearFields
+    ShowFrame fraPrescription
+End Sub
+
+Private Sub cmdRConfirm_Click()
+    If Trim(txtRID.Text) = "" Then
+        MsgBox "Please enter a Patient ID.", vbExclamation
+        Exit Sub
+    End If
+    If Not IsNumeric(txtRID.Text) Then
+        MsgBox "ID must be a number.", vbExclamation
+        Exit Sub
+    End If
+
+    Dim patientID As Long
+    patientID = CLng(txtRID.Text)
+
+    Set rs = New ADODB.Recordset
+    rs.Open "SELECT * FROM patient_master WHERE ID = " & patientID, cn, adOpenDynamic, adLockOptimistic
+
+    If rs.EOF Then
+        MsgBox "No record found with that ID.", vbInformation
+        Exit Sub
+    End If
+
+    If MsgBox("Are you sure you want to delete this record?", vbYesNo + vbQuestion) = vbYes Then
+        Set cnArchive = New ADODB.Connection
+        cnArchive.Open "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & App.Path & "\ClinicRecord.mdb"
+
+        Dim treatmentVal As String, diagnosisVal As String, medicineVal As String
+        treatmentVal = IIf(IsNull(rs!Treatment), "NULL", "'" & Replace(rs!Treatment, "'", "''") & "'")
+        diagnosisVal = IIf(IsNull(rs!Diagnosis), "NULL", "'" & Replace(rs!Diagnosis, "'", "''") & "'")
+        medicineVal = IIf(IsNull(rs!Medicine), "NULL", "'" & Replace(rs!Medicine, "'", "''") & "'")
+        Dim dobVal As String, ageVal As String
+        dobVal = IIf(IsNull(rs!dob), "NULL", "#" & Format(rs!dob, "mm/dd/yyyy") & "#")
+        ageVal = IIf(IsNull(rs!age), "NULL", rs!age)
+
+        Dim sqlArchive As String
+        sqlArchive = "INSERT INTO archive_master (ID, Name, Address, Age, DOB, Sex, Allergy, Condition, Contact, Complain, Treatment, Diagnosis, Medicine) VALUES (" & _
+                     rs!ID & ", '" & Replace(rs!Name, "'", "''") & "', '" & Replace(rs!Address, "'", "''") & "', " & _
+                     ageVal & ", " & dobVal & ", '" & Replace(rs!Sex, "'", "''") & "', '" & Replace(rs!Allergy, "'", "''") & "', '" & _
+                     Replace(rs!Condition, "'", "''") & "', '" & Replace(rs!contact, "'", "''") & "', '" & _
+                     Replace(rs!Complain, "'", "''") & "', " & treatmentVal & ", " & diagnosisVal & ", " & medicineVal & ")"
+
+        cnArchive.Execute sqlArchive
+        cnArchive.Close
+        Set cnArchive = Nothing
+
+        rs.Delete
+        MsgBox "Record archived and deleted successfully!"
+    End If
+
+    rs.Close
+    Set rs = Nothing
+End Sub
+
+Private Sub cmdLoadArchive_Click()
+    Set cnArchive = New ADODB.Connection
+    cnArchive.Open "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & App.Path & "\ClinicRecord.mdb"
+
+    Set rsArchive = New ADODB.Recordset
+    rsArchive.CursorLocation = adUseClient
+    rsArchive.Open "SELECT * FROM archive_master ORDER BY ID ASC", cnArchive, adOpenStatic, adLockReadOnly
+
+    Set DGArchive.DataSource = rsArchive
+
+    Dim i As Integer
+    For i = 0 To 12
+        DGArchive.Columns(i).Width = 1500
+    Next i
+End Sub
+
+Private Sub cmdRefreshArchive_Click()
+    If Not rsArchive Is Nothing Then
+        rsArchive.Close
+        Set rsArchive = Nothing
+    End If
+    cmdLoadArchive_Click
+End Sub
+
+Private Sub cmdEdit_Click()
+    Dim rsCheck As New ADODB.Recordset
+    rsCheck.Open "SELECT * FROM patient_master", cn, adOpenStatic, adLockReadOnly
+
+    If rsCheck.EOF Then
+        MsgBox "No records found.", vbInformation
+        rsCheck.Close
+        Set rsCheck = Nothing
+        Exit Sub
+    End If
+
+    frmEditData.OpenPrescriptionOnLoad = False
+    frmEditData.InitializeForm
+    frmEditData.Show
+
+    Unload Me
+
+    rsCheck.Close
+    Set rsCheck = Nothing
+
+End Sub
+
+Private Sub cmdLoad_Click()
+    Dim rsData As ADODB.Recordset
+    Set rsData = New ADODB.Recordset
+    rsData.CursorLocation = adUseClient
+    rsData.Open "SELECT * FROM patient_master ORDER BY ID ASC", cn, adOpenStatic, adLockReadOnly
+
+    Set DGData.DataSource = rsData
+
+    Dim i As Integer
+    For i = 0 To 12
+        DGData.Columns(i).Width = 1500
+    Next i
+End Sub
+
+Private Sub cmdRefresh_Click()
+    If Not rs Is Nothing Then
+        rs.Close
+        Set rs = Nothing
+    End If
+    cmdLoad_Click
+End Sub
+
+'New Codes
+Private Sub dtpDOB_Change()
+    CalculateAge
+End Sub
+
+Private Sub CalculateAge()
+
+    If dtpDOB.Value > Date Then
+        dtpDOB.Value = Date
+        Exit Sub
+    End If
+
+    Dim age As Integer
+    age = Year(Date) - Year(dtpDOB.Value)
+    If Month(Date) < Month(dtpDOB.Value) _
+    Or (Month(Date) = Month(dtpDOB.Value) And Day(Date) < Day(dtpDOB.Value)) Then
+        age = age - 1
+    End If
+
+    If age < 0 Or age > 121 Then
+        Exit Sub
+    End If
+
+    txtAge.Text = age
+
+End Sub
+
+Private Sub txtContact_Change()
+    Dim i As Integer
+    Dim temp As String
+    
+    For i = 1 To Len(txtContact.Text)
+        If Mid(txtContact.Text, i, 1) Like "[0-9]" Then
+            temp = temp & Mid(txtContact.Text, i, 1)
+        End If
+    Next i
+    
+    If txtContact.Text <> temp Then
+        txtContact.Text = temp
+        txtContact.SelStart = Len(temp)
+    End If
+
+End Sub
