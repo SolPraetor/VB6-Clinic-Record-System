@@ -1,4 +1,4 @@
-Option Explicit
+ption Explicit
 
 Dim cn As ADODB.Connection
 Dim rsReport As ADODB.Recordset
@@ -85,13 +85,13 @@ End Sub
 
 Private Sub cmdMedicalCert_Click()
     On Error GoTo PrintError
-    Dim patientID As String
+    Dim PID As String
 
-    patientID = InputBox("Enter Patient ID to generate certificate:")
-    If patientID = "" Then Exit Sub
+    PID = InputBox("Enter Patient ID to generate certificate:")
+    If PID = "" Then Exit Sub
 
     Dim rsCert As New ADODB.Recordset
-    rsCert.Open "SELECT Name, Diagnosis FROM patient_master WHERE ID = " & patientID, _
+    rsCert.Open "SELECT Name, Diagnosis FROM patient_master WHERE ID = " & PID, _
                 cn, adOpenStatic, adLockReadOnly
 
     If rsCert.EOF Then
@@ -162,17 +162,17 @@ Private Sub cmdPrint_Click()
     Printer.Print String(100, "-")
     Printer.Print ""
 
-    Dim i As Integer
+    Dim field As Integer
     Dim rowText As String
 
     Do While Not rsReport.EOF
 
         rowText = ""
 
-        For i = 0 To rsReport.Fields.Count - 1
-            rowText = rowText & rsReport.Fields(i).Name & ": " & _
-                      rsReport.Fields(i).Value & "   "
-        Next i
+        For field = 0 To rsReport.Fields.Count - 1
+            rowText = rowText & rsReport.Fields(field).Name & ": " & _
+                      rsReport.Fields(field).Value & "   "
+        Next field
 
         Printer.Print rowText
         Printer.Print String(80, "-")
@@ -244,8 +244,8 @@ Private Sub cmdExportPDF_Click()
     End If
 
     Printer.ScaleMode = vbTwips
-    Printer.CurrentX = 500
-    Printer.CurrentY = 500
+    Printer.CurrentX = 1000
+    Printer.CurrentY = 1000
 
     rsReport.MoveFirst
     Printer.FontSize = 12
@@ -256,28 +256,28 @@ Private Sub cmdExportPDF_Click()
     Printer.Print String(100, "-")
     Printer.Print ""
 
-    Dim i As Integer
+    Dim field As Integer
     Dim rowText As String
     
     Do While Not rsReport.EOF
 
         rowText = ""
 
-        For i = 0 To rsReport.Fields.Count - 1
-            If IsNull(rsReport.Fields(i).Value) Then
+        For field = 0 To rsReport.Fields.Count - 1
+            If IsNull(rsReport.Fields(field).Value) Then
                 rowText = rowText & ""
             Else
                 rowText = rowText & rsReport.Fields(i).Value
             End If
 
             rowText = rowText & "    "
-        Next i
+        Next field
 
         Printer.Print rowText
         If Printer.CurrentY > Printer.ScaleHeight - 1000 Then
             Printer.NewPage
-            Printer.CurrentX = 500
-            Printer.CurrentY = 500
+            Printer.CurrentX = 1000
+            Printer.CurrentY = 1000
         End If
 
         rsReport.MoveNext

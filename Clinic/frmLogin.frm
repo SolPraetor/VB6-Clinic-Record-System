@@ -138,18 +138,24 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Private Sub cmdLogin_Click()
     loginado.RecordSource = "SELECT * FROM clinic_master " & _
-                            "WHERE Username = '" & txtUser.Text & "' " & _
-                            "AND Password = '" & txtPass.Text & "'"
+                            "WHERE Username = '" & Replace(txtUser.Text, "'", "''") & "'"
+                            
     loginado.Refresh
 
     If Not loginado.Recordset.EOF Then
-        If loginado.Recordset!ID = 1 Then
-            frmUserDB.Show
+        If StrComp(loginado.Recordset!UserName, txtUser.Text, vbBinaryCompare) = 0 _
+            And StrComp(loginado.Recordset!Password, txtPass.Text, vbBinaryCompare) = 0 Then
+                If loginado.Recordset!ID = 1 Then
+                    frmUserDB.Show
+                End If
+            Unload Me
+        Else
+            MsgBox "Invalid Credentials!", vbCritical
         End If
-        Unload Me
     Else
         MsgBox "Invalid Credentials!", vbCritical
     End If
+
 End Sub
 
 Private Sub cmdTerminate_Click()

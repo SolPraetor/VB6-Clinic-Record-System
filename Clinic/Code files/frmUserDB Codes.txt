@@ -5,11 +5,11 @@ Dim cn As ADODB.Connection
 Dim rs As ADODB.Recordset
 Dim cnArchive As ADODB.Connection
 Dim rsArchive As ADODB.Recordset
-Dim SelectedPatientID As Long
-Public OpenLogOnLoad As Boolean
+Dim SelectID As Long
+Public OpenLog As Boolean
 
 'Necessary Codes
-Public Sub LoadMedicineCombo(cbo As ComboBox)
+Public Sub LoadCombo(cbo As ComboBox)
     Dim rsMed As ADODB.Recordset
     Set rsMed = New ADODB.Recordset
 
@@ -38,10 +38,6 @@ Private Sub cmdReport_Click()
     frmReport.Show
 End Sub
 
-Private Sub Command1_Click()
-    LoadMedicineCombo cboMedicine
-End Sub
-
 Private Sub Form_Load()
     fraAddPatient.Visible = False
     fraRemovePatient.Visible = False
@@ -49,7 +45,7 @@ Private Sub Form_Load()
     fraPatientLog.Visible = False
     cmdPConfirm.Enabled = False
 
-    If OpenLogOnLoad Then
+    If OpenLog Then
         fraPatientLog.Visible = True
     Else
         fraMain.Visible = True
@@ -61,7 +57,7 @@ Private Sub Form_Load()
     Set rs = New ADODB.Recordset
     rs.Open "SELECT * FROM patient_master", cn, adOpenDynamic, adLockOptimistic
 
-    LoadMedicineCombo cboMedicine
+    LoadCombo cboMedicine
     
     cboSex.Clear
     cboSex.AddItem "Male"
@@ -113,13 +109,13 @@ Private Sub ShowRecord()
     txtAddress.Text = rs!Address
     txtAllergy.Text = rs!Allergy
     txtCondition.Text = rs!Condition
-    txtContact.Text = rs!contact
+    txtContact.Text = rs!Contact
     txtComplain.Text = rs!Complain
     txtTreatment.Text = IIf(IsNull(rs!Treatment), "", rs!Treatment)
     txtDiagnosis.Text = IIf(IsNull(rs!Diagnosis), "", rs!Diagnosis)
 End Sub
 
-Private Sub ClearFields()
+Private Sub Clear()
     txtName.Text = ""
     txtAge.Text = ""
     dtpDOB.Value = Date
@@ -130,19 +126,19 @@ Private Sub ClearFields()
     txtContact.Text = ""
     txtComplain.Text = ""
     lblSelectedID.Caption = "Selected Patient: None"
-    SelectedPatientID = 0
+    SelectID = 0
     cmdPConfirm.Enabled = False
 End Sub
 
-Private Function GetNextPatientID() As Long
+Private Function GetNextID() As Long
     Dim rsID As ADODB.Recordset
     Set rsID = New ADODB.Recordset
 
     rsID.Open "SELECT MAX(ID) AS MaxID FROM patient_master", cn, adOpenForwardOnly, adLockReadOnly
     If rsID.EOF Or IsNull(rsID!MaxID) Then
-        GetNextPatientID = 1
+        GetNextID = 1
     Else
-        GetNextPatientID = rsID!MaxID + 1
+        GetNextID = rsID!MaxID + 1
     End If
     rsID.Close
     Set rsID = Nothing
@@ -158,23 +154,23 @@ End Sub
 
 Private Sub cmdAddPatient_Click()
     ShowFrame fraAddPatient
-    ClearFields
-    txtID.Text = GetNextPatientID
+    Clear
+    txtID.Text = GetNextID
 End Sub
 
 Private Sub cmdRemovePatient_Click()
     ShowFrame fraRemovePatient
-    ClearFields
+    Clear
 End Sub
 
 Private Sub cmdPrescription_Click()
     ShowFrame fraPrescription
-    ClearFields
+    Clear
 End Sub
 
 Private Sub cmdPatientLog_Click()
     ShowFrame fraPatientLog
-    ClearFields
+    Clear
 End Sub
 
 
@@ -186,16 +182,21 @@ Private Sub cmdAddConfirm_Click()
     Set rs = New ADODB.Recordset
     rs.Open "patient_master", cn, adOpenDynamic, adLockOptimistic
 
+    If Trim(txtName.Text) = "" Then
+        MsgBox "Please enter the Patient's Name.", vbExclamation
+        Exit Sub
+    End If
+
     If MsgBox("Are you sure you want to add this patient record?", vbYesNo + vbQuestion) = vbNo Then
         rs.CancelUpdate
         Exit Sub
     End If
     
-    Dim contact As String
-    contact = Trim(txtContact.Text)
+    Dim ContactNo As String
+    ContactNo = Trim(txtContact.Text)
 
-    If contact <> "" And Not contact Like "09#########" Then
-        MsgBox "Invalid contact number format.", vbExclamation
+    If ContactNo <> "" And Not ContactNo Like "09#########" Then
+        MsgBox "Invalid ContactNo number format.", vbExclamation
         txtContact.SetFocus
         Exit Sub
     End If
@@ -208,15 +209,15 @@ Private Sub cmdAddConfirm_Click()
     rs!Sex = cboSex.Text
     rs!Allergy = txtAllergy.Text
     rs!Condition = txtCondition.Text
-    rs!contact = txtContact.Text
+    rs!Contact = txtContact.Text
     rs!Complain = txtComplain.Text
 
     rs.Update
     MsgBox "Patient record saved successfully!"
     rs.MoveLast
     ShowRecord
-    txtID.Text = GetNextPatientID
-    ClearFields
+    txtID.Text = GetNextID
+    Clear
     ShowFrame fraAddPatient
 End Sub
 
@@ -234,9 +235,9 @@ Private Sub cmdSelect_Click()
         Exit Sub
     End If
 
-    SelectedPatientID = CLng(txtPID.Text)
+    SelectID = CLng(txtPID.Text)
     Set rs = New ADODB.Recordset
-    rs.Open "SELECT * FROM patient_master WHERE ID = " & SelectedPatientID, cn, adOpenDynamic, adLockOptimistic
+    rs.Open "SELECT * FROM patient_master WHERE ID = " & SelectID, cn, adOpenDynamic, adLockOptimistic
 
     If rs.EOF Then
         MsgBox "No patient found with that ID.", vbInformation
@@ -250,19 +251,19 @@ Private Sub cmdSelect_Click()
 End Sub
 
 Private Sub cmdPEdit_Click()
-    frmEditData.OpenPrescriptionOnLoad = True
+    frmEditData.OpenPrescription = True
     frmEditData.Show
     frmUserDB.Hide
 End Sub
 
 Private Sub cmdPConfirm_Click()
-    If SelectedPatientID = 0 Then
+    If SelectID = 0 Then
         MsgBox "Please select a patient first using the Select button.", vbExclamation
         Exit Sub
     End If
 
     Set rs = New ADODB.Recordset
-    rs.Open "SELECT * FROM patient_master WHERE ID = " & SelectedPatientID, cn, adOpenDynamic, adLockOptimistic
+    rs.Open "SELECT * FROM patient_master WHERE ID = " & SelectID, cn, adOpenDynamic, adLockOptimistic
 
     If rs.EOF Then
         MsgBox "Patient record no longer exists.", vbCritical
@@ -311,7 +312,7 @@ Private Sub cmdPConfirm_Click()
     Set rsStock = Nothing
 
     ShowRecord
-    ClearFields
+    Clear
     ShowFrame fraPrescription
 End Sub
 
@@ -340,20 +341,20 @@ Private Sub cmdRConfirm_Click()
         Set cnArchive = New ADODB.Connection
         cnArchive.Open "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & App.Path & "\ClinicRecord.mdb"
 
-        Dim treatmentVal As String, diagnosisVal As String, medicineVal As String
-        treatmentVal = IIf(IsNull(rs!Treatment), "NULL", "'" & Replace(rs!Treatment, "'", "''") & "'")
-        diagnosisVal = IIf(IsNull(rs!Diagnosis), "NULL", "'" & Replace(rs!Diagnosis, "'", "''") & "'")
-        medicineVal = IIf(IsNull(rs!Medicine), "NULL", "'" & Replace(rs!Medicine, "'", "''") & "'")
+        Dim Treatment As String, Diagnosis As String, Medicine As String
+        Treatment = IIf(IsNull(rs!Treatment), "NULL", "'" & Replace(rs!Treatment, "'", "''") & "'")
+        Diagnosis = IIf(IsNull(rs!Diagnosis), "NULL", "'" & Replace(rs!Diagnosis, "'", "''") & "'")
+        Medicine = IIf(IsNull(rs!Medicine), "NULL", "'" & Replace(rs!Medicine, "'", "''") & "'")
         Dim dobVal As String, ageVal As String
         dobVal = IIf(IsNull(rs!dob), "NULL", "#" & Format(rs!dob, "mm/dd/yyyy") & "#")
         ageVal = IIf(IsNull(rs!age), "NULL", rs!age)
 
         Dim sqlArchive As String
-        sqlArchive = "INSERT INTO archive_master (ID, Name, Address, Age, DOB, Sex, Allergy, Condition, Contact, Complain, Treatment, Diagnosis, Medicine) VALUES (" & _
+        sqlArchive = "INSERT INTO archive_master (ID, Name, Address, Age, DOB, Sex, Allergy, Condition, ContactNo, Complain, Treatment, Diagnosis, Medicine) VALUES (" & _
                      rs!ID & ", '" & Replace(rs!Name, "'", "''") & "', '" & Replace(rs!Address, "'", "''") & "', " & _
                      ageVal & ", " & dobVal & ", '" & Replace(rs!Sex, "'", "''") & "', '" & Replace(rs!Allergy, "'", "''") & "', '" & _
-                     Replace(rs!Condition, "'", "''") & "', '" & Replace(rs!contact, "'", "''") & "', '" & _
-                     Replace(rs!Complain, "'", "''") & "', " & treatmentVal & ", " & diagnosisVal & ", " & medicineVal & ")"
+                     Replace(rs!Condition, "'", "''") & "', '" & Replace(rs!Contact, "'", "''") & "', '" & _
+                     Replace(rs!Complain, "'", "''") & "', " & Treatment & ", " & Diagnosis & ", " & Medicine & ")"
 
         cnArchive.Execute sqlArchive
         cnArchive.Close
@@ -377,10 +378,10 @@ Private Sub cmdLoadArchive_Click()
 
     Set DGArchive.DataSource = rsArchive
 
-    Dim i As Integer
-    For i = 0 To 12
-        DGArchive.Columns(i).Width = 1500
-    Next i
+    Dim col As Integer
+    For col = 0 To 12
+        DGArchive.Columns(col).Width = 1500
+    Next col
 End Sub
 
 Private Sub cmdRefreshArchive_Click()
@@ -402,7 +403,7 @@ Private Sub cmdEdit_Click()
         Exit Sub
     End If
 
-    frmEditData.OpenPrescriptionOnLoad = False
+    frmEditData.OpenPrescription = False
     frmEditData.InitializeForm
     frmEditData.Show
 
@@ -421,10 +422,10 @@ Private Sub cmdLoad_Click()
 
     Set DGData.DataSource = rsData
 
-    Dim i As Integer
-    For i = 0 To 12
-        DGData.Columns(i).Width = 1500
-    Next i
+    Dim col As Integer
+    For col = 0 To 12
+        DGData.Columns(col).Width = 1500
+    Next col
 End Sub
 
 Private Sub cmdRefresh_Click()

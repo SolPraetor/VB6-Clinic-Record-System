@@ -268,7 +268,7 @@ Begin VB.Form frmEditData
          _ExtentY        =   661
          _Version        =   393216
          CustomFormat    =   """MM/dd/yyyy"""
-         Format          =   142737411
+         Format          =   142409731
          CurrentDate     =   46073
       End
       Begin VB.Label lblName 
@@ -544,19 +544,19 @@ Attribute VB_Exposed = False
 'General
 Dim cn As ADODB.Connection
 Dim rs As ADODB.Recordset
-Public OpenPrescriptionOnLoad As Boolean
-Private MedicineChanged As Boolean
+Public OpenPrescription As Boolean
+Private MedChanged As Boolean
 
 Private Sub cboMedicine_Change()
     If cboMedicine.ListIndex <> -1 Then
-        MedicineChanged = True
+        MedChanged = True
     Else
-        MedicineChanged = False
+        MedChanged = False
     End If
 End Sub
 
 Private Sub cmdRefresh_Click()
-    LoadMedicineCombo
+    LoadCombo
 End Sub
 
 'Necessary Codes
@@ -564,7 +564,7 @@ Private Sub Form_Load()
     fraEditDataWindow.Visible = True
     fraEditPrescription.Visible = False
     
-    If OpenPrescriptionOnLoad Then
+    If OpenPrescription Then
         fraEditDataWindow.Visible = False
         fraEditPrescription.Visible = True
     Else
@@ -577,8 +577,8 @@ Private Sub Form_Load()
     Set rs = New ADODB.Recordset
     rs.Open "SELECT * FROM patient_master ORDER BY ID ASC", cn, adOpenKeyset, adLockOptimistic
 
-    LoadIDDropdown
-    LoadMedicineCombo
+    LoadDropdown
+    LoadCombo
     
     cboSex.Clear
     cboSex.AddItem "Male"
@@ -587,7 +587,7 @@ Private Sub Form_Load()
 
     If cmbID.ListCount > 0 Then
         cmbID.ListIndex = 0
-        LoadRecordByID CLng(cmbID.Text)
+        LoadRecord CLng(cmbID.Text)
     End If
     
     dtpDOB.MaxDate = Date
@@ -595,7 +595,7 @@ Private Sub Form_Load()
     
 End Sub
 
-Private Sub LoadMedicineCombo()
+Private Sub LoadCombo()
     Dim rsMed As New ADODB.Recordset
     rsMed.CursorLocation = adUseClient
     rsMed.Open "SELECT MedName FROM medicine_master ORDER BY MedName ASC", cn, adOpenStatic, adLockReadOnly
@@ -618,7 +618,7 @@ Private Sub ShowFrame(fra As Frame)
     fra.Visible = True
 End Sub
 
-Private Sub ClearEditFields()
+Private Sub Clear()
     txtName.Text = ""
     txtAddress.Text = ""
     txtAge.Text = ""
@@ -659,11 +659,11 @@ Private Sub ShowEditRecord()
     
     txtAllergy.Text = rs!Allergy
     txtCondition.Text = rs!Condition
-    txtContact.Text = rs!contact
+    txtContact.Text = rs!Contact
     txtComplain.Text = rs!Complain
 End Sub
 
-Private Sub LoadIDDropdown()
+Private Sub LoadDropdown()
     Dim rsIDs As New ADODB.Recordset
     rsIDs.CursorLocation = adUseClient
     rsIDs.Open "SELECT ID FROM patient_master ORDER BY ID ASC", cn, adOpenStatic, adLockReadOnly
@@ -678,14 +678,14 @@ Private Sub LoadIDDropdown()
     Set rsIDs = Nothing
 End Sub
 
-Private Sub LoadPrescriptionByID(ByVal patientID As Long)
+Private Sub LoadPrescription(ByVal patientID As Long)
     Dim rsP As New ADODB.Recordset
     rsP.CursorLocation = adUseClient
     rsP.Open "SELECT Medicine, Diagnosis, Treatment FROM patient_master WHERE ID = " & patientID, _
              cn, adOpenKeyset, adLockReadOnly
 
     cboMedicine.ListIndex = -1
-    MedicineChanged = False
+    MedChanged = False
 
     If Not rsP.EOF Then
         If Not IsNull(rsP!Medicine) Then
@@ -706,7 +706,7 @@ Private Sub LoadPrescriptionByID(ByVal patientID As Long)
     Set rsP = Nothing
 End Sub
 
-Private Sub LoadRecordByID(ByVal patientID As Long)
+Private Sub LoadRecord(ByVal patientID As Long)
     If rs.State = adStateOpen Then
         If rs.EditMode <> adEditNone Then rs.CancelUpdate
         rs.Close
@@ -717,9 +717,9 @@ Private Sub LoadRecordByID(ByVal patientID As Long)
 
     If Not rs.EOF Then
         ShowEditRecord
-        LoadPrescriptionByID patientID
+        LoadPrescription patientID
     Else
-        ClearEditFields
+        Clear
     End If
 End Sub
 
@@ -747,11 +747,11 @@ Private Sub cmdUpdate_Click()
         Exit Sub
     End If
     
-    Dim contact As String
-    contact = Trim(txtContact.Text)
+    Dim ContactNo As String
+    ContactNo = Trim(txtContact.Text)
 
-    If contact <> "" And Not contact Like "09#########" Then
-        MsgBox "Invalid contact number format.", vbExclamation
+    If ContactNo <> "" And Not ContactNo Like "09#########" Then
+        MsgBox "Invalid ContactNo number format.", vbExclamation
         txtContact.SetFocus
         Exit Sub
     End If
@@ -769,7 +769,7 @@ Private Sub cmdUpdate_Click()
     rs!Sex = cboSex.Text
     rs!Allergy = txtAllergy.Text
     rs!Condition = txtCondition.Text
-    rs!contact = txtContact.Text
+    rs!Contact = txtContact.Text
     rs!Complain = txtComplain.Text
     rs!Treatment = txtTreatment.Text
     rs!Diagnosis = txtDiagnosis.Text
@@ -817,7 +817,7 @@ Private Sub cmbID_Click()
         Dim newID As Long
         newID = CLng(cmbID.Text)
 
-        LoadRecordByID newID
+        LoadRecord newID
     End If
 End Sub
 
@@ -847,7 +847,7 @@ Private Sub cmdReturn_Click()
 
     Unload Me
 
-    frmUserDB.OpenLogOnLoad = True
+    frmUserDB.OpenLog = True
     frmUserDB.Show
 End Sub
 
@@ -899,7 +899,7 @@ Public Sub InitializeForm()
     fraEditDataWindow.Visible = True
     fraEditPrescription.Visible = False
     
-    If OpenPrescriptionOnLoad Then
+    If OpenPrescription Then
         fraEditDataWindow.Visible = False
         fraEditPrescription.Visible = True
     Else

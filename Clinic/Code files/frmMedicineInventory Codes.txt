@@ -43,7 +43,7 @@ Private Sub LoadData()
 End Sub
 
 Private Sub cmdAdd_Click()
-    Dim stockValue As Long
+    Dim Stock As Long
     Dim rsCheck As ADODB.Recordset
 
     If txtMedName.Text = "" Or txtManufacturer.Text = "" Or txtQty.Text = "" Then
@@ -55,7 +55,7 @@ Private Sub cmdAdd_Click()
         MsgBox "Stock must be numeric.", vbExclamation
         Exit Sub
     End If
-    stockValue = CLng(txtQty.Text)
+    Stock = CLng(txtQty.Text)
 
     Set rsCheck = New ADODB.Recordset
     rsCheck.CursorLocation = adUseClient
@@ -75,7 +75,7 @@ Private Sub cmdAdd_Click()
 
     cn.Execute "INSERT INTO medicine_master (MedID, MedName, Manufacturer, StockQty) VALUES (" & _
                GetNextMedID & ", '" & Replace(txtMedName.Text, "'", "''") & "', '" & _
-               Replace(txtManufacturer.Text, "'", "''") & "', " & stockValue & ")"
+               Replace(txtManufacturer.Text, "'", "''") & "', " & Stock & ")"
 
     MsgBox "Medicine added successfully!", vbInformation
 
@@ -83,12 +83,12 @@ Private Sub cmdAdd_Click()
         frmUserDB.LoadMedicineCombo frmUserDB.cboMedicine
     End If
 
-    Call ClearFields
+    Call Clear
     Call LoadData
 End Sub
 
 Private Sub cmdUpdate_Click()
-    Dim stockValue As Long
+    Dim Stock As Long
 
     If txtMedID.Text = "" Then
         MsgBox "Select a record from the grid first.", vbExclamation
@@ -99,14 +99,14 @@ Private Sub cmdUpdate_Click()
         MsgBox "Stock must be numeric.", vbExclamation
         Exit Sub
     End If
-    stockValue = CLng(txtQty.Text)
+    Stock = CLng(txtQty.Text)
 
     If MsgBox("Update this medicine?", vbYesNo + vbQuestion) = vbNo Then Exit Sub
 
     cn.Execute "UPDATE medicine_master SET " & _
                "MedName='" & Replace(txtMedName.Text, "'", "''") & "', " & _
                "Manufacturer='" & Replace(txtManufacturer.Text, "'", "''") & "', " & _
-               "StockQty=" & stockValue & " " & _
+               "StockQty=" & Stock & " " & _
                "WHERE MedID=" & txtMedID.Text
 
     MsgBox "Medicine updated successfully!", vbInformation
@@ -115,7 +115,7 @@ Private Sub cmdUpdate_Click()
         frmUserDB.LoadMedicineCombo frmUserDB.cboMedicine
     End If
 
-    Call ClearFields
+    Call Clear
     Call LoadData
 End Sub
 
@@ -133,7 +133,7 @@ Private Sub cmdDelete_Click()
             frmUserDB.LoadMedicineCombo frmUserDB.cboMedicine
         End If
 
-        Call ClearFields
+        Call Clear
         Call LoadData
     End If
 End Sub
@@ -152,10 +152,10 @@ Private Sub DGMedicine_RowColChange(LastRow As Variant, ByVal LastCol As Integer
 End Sub
 
 Private Sub cmdClear_Click()
-    Call ClearFields
+    Call Clear
 End Sub
 
-Private Sub ClearFields()
+Private Sub Clear()
     txtMedID.Text = GetNextMedID
     txtMedName.Text = ""
     txtManufacturer.Text = ""
