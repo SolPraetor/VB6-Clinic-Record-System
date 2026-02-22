@@ -191,7 +191,7 @@ Begin VB.Form frmEditData
          Top             =   3720
          Width           =   2175
       End
-      Begin VB.TextBox txtAllergy 
+      Begin VB.TextBox txtSymptom 
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   15
@@ -268,7 +268,7 @@ Begin VB.Form frmEditData
          _ExtentY        =   661
          _Version        =   393216
          CustomFormat    =   """MM/dd/yyyy"""
-         Format          =   142409731
+         Format          =   143917059
          CurrentDate     =   46073
       End
       Begin VB.Label lblName 
@@ -283,7 +283,7 @@ Begin VB.Form frmEditData
             Strikethrough   =   0   'False
          EndProperty
          Height          =   615
-         Left            =   240
+         Left            =   120
          TabIndex        =   16
          Top             =   480
          Width           =   1215
@@ -300,7 +300,7 @@ Begin VB.Form frmEditData
             Strikethrough   =   0   'False
          EndProperty
          Height          =   615
-         Left            =   240
+         Left            =   120
          TabIndex        =   15
          Top             =   1320
          Width           =   1215
@@ -317,7 +317,7 @@ Begin VB.Form frmEditData
             Strikethrough   =   0   'False
          EndProperty
          Height          =   615
-         Left            =   240
+         Left            =   120
          TabIndex        =   14
          Top             =   2160
          Width           =   1215
@@ -334,7 +334,7 @@ Begin VB.Form frmEditData
             Strikethrough   =   0   'False
          EndProperty
          Height          =   615
-         Left            =   240
+         Left            =   120
          TabIndex        =   13
          Top             =   3840
          Width           =   1455
@@ -351,13 +351,13 @@ Begin VB.Form frmEditData
             Strikethrough   =   0   'False
          EndProperty
          Height          =   615
-         Left            =   240
+         Left            =   120
          TabIndex        =   12
          Top             =   3000
          Width           =   1215
       End
-      Begin VB.Label lblAllergy 
-         Caption         =   "Allergy"
+      Begin VB.Label lblSymptom 
+         Caption         =   "Symptom"
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   18
@@ -368,10 +368,10 @@ Begin VB.Form frmEditData
             Strikethrough   =   0   'False
          EndProperty
          Height          =   615
-         Left            =   240
+         Left            =   120
          TabIndex        =   11
          Top             =   4680
-         Width           =   1215
+         Width           =   1575
       End
       Begin VB.Label lblCondition 
          Caption         =   "Condition"
@@ -624,7 +624,7 @@ Private Sub Clear()
     txtAge.Text = ""
     dtpDOB.Value = Date
     cboSex.ListIndex = -1
-    txtAllergy.Text = ""
+    txtSymptom.Text = ""
     txtCondition.Text = ""
     txtContact.Text = ""
     txtComplain.Text = ""
@@ -657,7 +657,7 @@ Private Sub ShowEditRecord()
         cboSex.ListIndex = -1
     End If
     
-    txtAllergy.Text = rs!Allergy
+    txtSymptom.Text = rs!Symptom
     txtCondition.Text = rs!Condition
     txtContact.Text = rs!Contact
     txtComplain.Text = rs!Complain
@@ -767,7 +767,7 @@ Private Sub cmdUpdate_Click()
 
     rs!dob = dtpDOB.Value
     rs!Sex = cboSex.Text
-    rs!Allergy = txtAllergy.Text
+    rs!Symptom = txtSymptom.Text
     rs!Condition = txtCondition.Text
     rs!Contact = txtContact.Text
     rs!Complain = txtComplain.Text

@@ -1,0 +1,56 @@
+Clinic Management System Functional Decomposition List (FDL)
+
+1.  User Management
+
+1.1 User Login - The system shall allow registered users to log in using a
+valid username and password. The system shall validate credentials
+before granting access.
+
+1.2 User Logout - The system shall allow users to securely log out of the
+system. The system shall terminate the active session after logout.
+
+1.3 Role Verification - The system shall ensure that only the registered nurse account can access the system features.
+
+2.  Patient Management
+
+2.1 Register Patient - The system shall allow authorized users to enter new patient details including personal information and contact details. The system shall automatically generate a unique Patient ID.
+
+2.2 Update Patient Information - The system shall allow authorized users to modify existing patient information. The system shall save all updates to the database.
+
+2.3 View Patient Records - The system shall allow authorized users to search and view patient records. The system shall display complete patient medical history.
+
+2.4 Archive Patient Records - The system shall allow users to archive deleted patient records instead of permanently removing them. The system shall store archived records in a separate archive table.
+
+2.5 View Patient History Log - The system shall allow users to view logs of patient record updates and modifications.
+
+3.  Prescription Management
+
+3.1 Create Prescription - The system shall allow doctors to create a new prescription during consultation.
+
+3.1.1 Record Diagnosis - The system shall allow doctors to record the patient’s diagnosis.
+
+3.1.2 Record Treatment Plan - The system shall allow doctors to input the recommended treatment plan.
+
+3.1.3 Prescribe Medicine - The system shall allow doctors to select medicines from inventory and assign dosage instructions.
+
+3.2 View Prescription History - The system shall allow users to view past prescriptions and consultation records.
+
+4.  Inventory Management
+
+4.1 View Medicine Inventory - The system shall display a list of all available medicines and their stock levels.
+
+4.2 Track Medicine Usage - The system shall automatically deduct medicine quantities when prescriptions are created. The system shall record medicine usage history.
+
+4.3 Order Medicines - The system shall allow administrators to record medicine orders from suppliers.
+
+4.4 Update Stock Levels - The system shall allow authorized users to manually update medicine stock quantities when needed.
+
+5.  Reporting and Documentation
+
+5.1 Generate Patient Reports - The system shall generate reports containing patient information and medical history.
+
+5.2 Generate Inventory Reports - The system shall generate reports showing current stock levels and medicine usage.
+
+5.3 Print Patient Certificate - The system shall allow users to generate and print official patient certificates.
+
+5.4 Export Reports - The system shall allow users to export reports into external file formats such as PDF.

@@ -62,7 +62,7 @@ Begin VB.Form frmUserDB
             _ExtentY        =   661
             _Version        =   393216
             CustomFormat    =   """MM/dd/yyyy"""
-            Format          =   142409731
+            Format          =   143917059
             CurrentDate     =   46073
          End
          Begin VB.CommandButton cmdAddConfirm 
@@ -150,7 +150,7 @@ Begin VB.Form frmUserDB
             Top             =   1080
             Width           =   2175
          End
-         Begin VB.TextBox txtAllergy 
+         Begin VB.TextBox txtSymptom 
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   9.75
@@ -282,8 +282,8 @@ Begin VB.Form frmUserDB
             Top             =   1200
             Width           =   1575
          End
-         Begin VB.Label lblAllergy 
-            Caption         =   "Allergy"
+         Begin VB.Label lblSymptom 
+            Caption         =   "Symptom"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   18
@@ -294,10 +294,10 @@ Begin VB.Form frmUserDB
                Strikethrough   =   0   'False
             EndProperty
             Height          =   615
-            Left            =   360
+            Left            =   240
             TabIndex        =   28
             Top             =   6240
-            Width           =   1215
+            Width           =   1575
          End
          Begin VB.Label lblSex 
             Caption         =   "Sex"
@@ -311,7 +311,7 @@ Begin VB.Form frmUserDB
                Strikethrough   =   0   'False
             EndProperty
             Height          =   615
-            Left            =   360
+            Left            =   240
             TabIndex        =   27
             Top             =   4560
             Width           =   1215
@@ -328,7 +328,7 @@ Begin VB.Form frmUserDB
                Strikethrough   =   0   'False
             EndProperty
             Height          =   615
-            Left            =   360
+            Left            =   240
             TabIndex        =   26
             Top             =   5400
             Width           =   1455
@@ -345,7 +345,7 @@ Begin VB.Form frmUserDB
                Strikethrough   =   0   'False
             EndProperty
             Height          =   615
-            Left            =   360
+            Left            =   240
             TabIndex        =   25
             Top             =   3720
             Width           =   1215
@@ -362,7 +362,7 @@ Begin VB.Form frmUserDB
                Strikethrough   =   0   'False
             EndProperty
             Height          =   615
-            Left            =   360
+            Left            =   240
             TabIndex        =   24
             Top             =   2880
             Width           =   1215
@@ -379,7 +379,7 @@ Begin VB.Form frmUserDB
                Strikethrough   =   0   'False
             EndProperty
             Height          =   615
-            Left            =   360
+            Left            =   240
             TabIndex        =   23
             Top             =   2040
             Width           =   1215
@@ -396,7 +396,7 @@ Begin VB.Form frmUserDB
                Strikethrough   =   0   'False
             EndProperty
             Height          =   615
-            Left            =   360
+            Left            =   240
             TabIndex        =   21
             Top             =   1200
             Width           =   1215
@@ -1231,7 +1231,7 @@ Private Sub ShowRecord()
     End If
     
     txtAddress.Text = rs!Address
-    txtAllergy.Text = rs!Allergy
+    txtSymptom.Text = rs!Symptom
     txtCondition.Text = rs!Condition
     txtContact.Text = rs!Contact
     txtComplain.Text = rs!Complain
@@ -1245,7 +1245,7 @@ Private Sub Clear()
     dtpDOB.Value = Date
     txtAddress.Text = ""
     cboSex.ListIndex = -1
-    txtAllergy.Text = ""
+    txtSymptom.Text = ""
     txtCondition.Text = ""
     txtContact.Text = ""
     txtComplain.Text = ""
@@ -1331,7 +1331,7 @@ Private Sub cmdAddConfirm_Click()
     rs!dob = dtpDOB.Value
     rs!Address = txtAddress.Text
     rs!Sex = cboSex.Text
-    rs!Allergy = txtAllergy.Text
+    rs!Symptom = txtSymptom.Text
     rs!Condition = txtCondition.Text
     rs!Contact = txtContact.Text
     rs!Complain = txtComplain.Text
@@ -1474,9 +1474,9 @@ Private Sub cmdRConfirm_Click()
         ageVal = IIf(IsNull(rs!age), "NULL", rs!age)
 
         Dim sqlArchive As String
-        sqlArchive = "INSERT INTO archive_master (ID, Name, Address, Age, DOB, Sex, Allergy, Condition, ContactNo, Complain, Treatment, Diagnosis, Medicine) VALUES (" & _
+        sqlArchive = "INSERT INTO archive_master (ID, Name, Address, Age, DOB, Sex, Symptom, Condition, ContactNo, Complain, Treatment, Diagnosis, Medicine) VALUES (" & _
                      rs!ID & ", '" & Replace(rs!Name, "'", "''") & "', '" & Replace(rs!Address, "'", "''") & "', " & _
-                     ageVal & ", " & dobVal & ", '" & Replace(rs!Sex, "'", "''") & "', '" & Replace(rs!Allergy, "'", "''") & "', '" & _
+                     ageVal & ", " & dobVal & ", '" & Replace(rs!Sex, "'", "''") & "', '" & Replace(rs!Symptom, "'", "''") & "', '" & _
                      Replace(rs!Condition, "'", "''") & "', '" & Replace(rs!Contact, "'", "''") & "', '" & _
                      Replace(rs!Complain, "'", "''") & "', " & Treatment & ", " & Diagnosis & ", " & Medicine & ")"
 
