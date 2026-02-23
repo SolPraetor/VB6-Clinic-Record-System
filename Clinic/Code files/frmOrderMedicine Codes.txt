@@ -1,0 +1,97 @@
+Option Explicit
+Dim cn As ADODB.Connection
+Dim rs As ADODB.Recordset
+
+Private Sub Form_Load()
+    Set cn = New ADODB.Connection
+    cn.Open "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & _
+            App.Path & "\ClinicRecord.mdb"
+End Sub
+
+Private Sub cmdOrder_Click()
+    Dim OrderQty As Long
+    Dim CurrentStock As Long
+    Dim NewStock As Long
+    Dim MedName As String
+    
+    If Not IsNumeric(txtQty.Text) Or txtQty.Text = "" Then
+        MsgBox "Enter order quantity.", vbExclamation
+        Exit Sub
+    End If
+    
+    If Not IsNumeric(txtMedID.Text) Or txtMedID.Text = "" Then
+        MsgBox "Invalid Medicine ID.", vbExclamation
+        Exit Sub
+    End If
+    
+    OrderQty = CLng(txtQty.Text)
+    MedName = Trim(txtMedName.Text)
+    
+    If OrderQty <= 0 Then
+        MsgBox "Order quantity must be greater than zero.", vbExclamation
+        Exit Sub
+    End If
+    
+    If MedName = "" Or Trim(txtManufacturer.Text) = "" Then
+        MsgBox "Medicine name and manufacturer are required for new records.", vbExclamation
+        Exit Sub
+    End If
+
+    Set rs = New ADODB.Recordset
+    rs.Open "SELECT StockQty FROM medicine_master WHERE MedID=" & txtMedID.Text, _
+            cn, adOpenForwardOnly, adLockReadOnly
+
+    If rs.EOF Then
+        If MsgBox("Medicine does not exist." & vbCrLf & _
+                  "Add new medicine: " & MedName & " ?", _
+                  vbYesNo + vbQuestion, "Insert New Medicine") = vbNo Then
+            rs.Close
+            Set rs = Nothing
+            Exit Sub
+        End If
+        
+        cn.Execute "INSERT INTO medicine_master (MedID, MedName, Manufacturer, StockQty) VALUES (" & _
+                   txtMedID.Text & ", '" & _
+                   Replace(txtMedName.Text, "'", "''") & "', '" & _
+                   Replace(txtManufacturer.Text, "'", "''") & "', " & _
+                   OrderQty & ")"
+                   
+        MsgBox "New medicine added successfully!", vbInformation
+        
+        NewStock = OrderQty
+        
+    Else
+        CurrentStock = rs!StockQty
+        NewStock = CurrentStock + OrderQty
+        
+        If MsgBox("Confirm order of " & OrderQty & _
+                  " units for medicine: " & MedName & " ?", _
+                  vbYesNo + vbQuestion, "Update Stock") = vbNo Then
+            rs.Close
+            Set rs = Nothing
+            Exit Sub
+        End If
+        
+        cn.Execute "UPDATE medicine_master SET StockQty=" & NewStock & _
+                   " WHERE MedID=" & txtMedID.Text
+                   
+        MsgBox "Stock updated successfully!", vbInformation
+        
+    End If
+
+    rs.Close
+    Set rs = Nothing
+
+    txtQty.Text = NewStock
+    
+    If Not frmMedicineInventory Is Nothing Then
+        frmMedicineInventory.LoadData
+    End If
+End Sub
+
+Private Sub cmdClose_Click()
+    Unload Me
+    If Not frmMedicineInventory Is Nothing Then
+        frmMedicineInventory.LoadData
+    End If
+End Sub

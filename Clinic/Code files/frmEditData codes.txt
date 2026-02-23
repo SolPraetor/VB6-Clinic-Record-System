@@ -81,9 +81,9 @@ Private Sub Clear()
     txtAge.Text = ""
     dtpDOB.Value = Date
     cboSex.ListIndex = -1
-    txtAllergy.Text = ""
+    txtSymptom.Text = ""
     txtCondition.Text = ""
-    txtContact.Text = ""
+    txtContact.Text = "09"
     txtComplain.Text = ""
     cboMedicine.ListIndex = -1
     txtTreatment.Text = ""
@@ -114,7 +114,7 @@ Private Sub ShowEditRecord()
         cboSex.ListIndex = -1
     End If
     
-    txtAllergy.Text = rs!Allergy
+    txtSymptom.Text = rs!Symptom
     txtCondition.Text = rs!Condition
     txtContact.Text = rs!Contact
     txtComplain.Text = rs!Complain
@@ -204,13 +204,16 @@ Private Sub cmdUpdate_Click()
         Exit Sub
     End If
     
-    Dim ContactNo As String
-    ContactNo = Trim(txtContact.Text)
+    If txtContact.Text = "09" Then
+        txtContact.Text = ""
+    End If
 
-    If ContactNo <> "" And Not ContactNo Like "09#########" Then
-        MsgBox "Invalid ContactNo number format.", vbExclamation
-        txtContact.SetFocus
-        Exit Sub
+    If txtContact.Text <> "" Then
+        If Not txtContact.Text Like "09#########" Then
+            MsgBox "Invalid Contact Details.", vbExclamation
+            txtContact.SetFocus
+            Exit Sub
+        End If
     End If
 
     rs!Name = txtName.Text
@@ -224,7 +227,7 @@ Private Sub cmdUpdate_Click()
 
     rs!dob = dtpDOB.Value
     rs!Sex = cboSex.Text
-    rs!Allergy = txtAllergy.Text
+    rs!Symptom = txtSymptom.Text
     rs!Condition = txtCondition.Text
     rs!Contact = txtContact.Text
     rs!Complain = txtComplain.Text
@@ -364,6 +367,28 @@ Public Sub InitializeForm()
         fraEditPrescription.Visible = False
     End If
     
+End Sub
+
+Private Sub txtContact_KeyPress(KeyAscii As Integer)
+    If txtContact.SelStart < 3 And KeyAscii = vbKeyBack Then
+        KeyAscii = 0
+    End If
+
+  If KeyAscii = vbKeyBack Then Exit Sub
+    If Len(txtContact.Text) = 0 Then
+        If Chr(KeyAscii) <> "0" Then
+            KeyAscii = 0
+            Exit Sub
+        End If
+    End If
+
+    If Len(txtContact.Text) = 1 Then
+        If Chr(KeyAscii) <> "9" Then
+            KeyAscii = 0
+            Exit Sub
+        End If
+    End If
+
 End Sub
 
 Private Sub txtContact_Change()

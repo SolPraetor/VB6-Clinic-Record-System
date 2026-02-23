@@ -3,34 +3,51 @@ Option Explicit
 Dim cn As ADODB.Connection
 Dim rs As ADODB.Recordset
 
+
+Private Sub cmdAdd_Click()
+    frmOrderMedicine.txtMedID.Text = GetNextMedID
+    frmOrderMedicine.Show
+End Sub
+
+Private Sub cmdOrder_Click()
+    If txtMedID.Text = "" Then
+        MsgBox "Select a record first.", vbExclamation
+        Exit Sub
+    End If
+
+    frmOrderMedicine.txtMedID.Text = txtMedID.Text
+    frmOrderMedicine.txtMedName.Text = txtMedName.Text
+    frmOrderMedicine.txtManufacturer.Text = txtManufacturer.Text
+    
+    frmOrderMedicine.Show vbModal
+End Sub
+
 Private Sub Form_Load()
     Set cn = New ADODB.Connection
     cn.Open "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & _
             App.Path & "\ClinicRecord.mdb"
 
     txtMedID.Locked = True
-    txtMedID.Text = GetNextMedID
 End Sub
 
 Private Function GetNextMedID() As Long
-    Dim rsID As ADODB.Recordset
-    Set rsID = New ADODB.Recordset
+    Set rs = New ADODB.Recordset
 
-    rsID.CursorLocation = adUseClient
-    rsID.Open "SELECT MAX(MedID) AS MaxID FROM medicine_master", cn, _
+    rs.CursorLocation = adUseClient
+    rs.Open "SELECT MAX(MedID) AS MaxID FROM medicine_master", cn, _
               adOpenForwardOnly, adLockReadOnly
 
-    If rsID.EOF Or IsNull(rsID!MaxID) Then
+    If rs.EOF Or IsNull(rs!MaxID) Then
         GetNextMedID = 1
     Else
-        GetNextMedID = rsID!MaxID + 1
+        GetNextMedID = rs!MaxID + 1
     End If
 
-    rsID.Close
-    Set rsID = Nothing
+    rs.Close
+    Set rs = Nothing
 End Function
 
-Private Sub LoadData()
+Public Sub LoadData()
     Set rs = New ADODB.Recordset
     rs.CursorLocation = adUseClient
 
@@ -42,83 +59,6 @@ Private Sub LoadData()
     Set DGMedicine.DataSource = rs
 End Sub
 
-Private Sub cmdAdd_Click()
-    Dim Stock As Long
-    Dim rsCheck As ADODB.Recordset
-
-    If txtMedName.Text = "" Or txtManufacturer.Text = "" Or txtQty.Text = "" Then
-        MsgBox "Please complete all fields.", vbExclamation
-        Exit Sub
-    End If
-
-    If Not IsNumeric(txtQty.Text) Then
-        MsgBox "Stock must be numeric.", vbExclamation
-        Exit Sub
-    End If
-    Stock = CLng(txtQty.Text)
-
-    Set rsCheck = New ADODB.Recordset
-    rsCheck.CursorLocation = adUseClient
-    rsCheck.Open "SELECT * FROM medicine_master WHERE MedName='" & _
-                 Replace(txtMedName.Text, "'", "''") & "'", cn, adOpenStatic, adLockReadOnly
-
-    If Not rsCheck.EOF Then
-        MsgBox "Medicine name already exists!", vbExclamation
-        rsCheck.Close
-        Set rsCheck = Nothing
-        Exit Sub
-    End If
-    rsCheck.Close
-    Set rsCheck = Nothing
-
-    If MsgBox("Add this medicine?", vbYesNo + vbQuestion) = vbNo Then Exit Sub
-
-    cn.Execute "INSERT INTO medicine_master (MedID, MedName, Manufacturer, StockQty) VALUES (" & _
-               GetNextMedID & ", '" & Replace(txtMedName.Text, "'", "''") & "', '" & _
-               Replace(txtManufacturer.Text, "'", "''") & "', " & Stock & ")"
-
-    MsgBox "Medicine added successfully!", vbInformation
-
-    If Not frmUserDB Is Nothing Then
-        frmUserDB.LoadMedicineCombo frmUserDB.cboMedicine
-    End If
-
-    Call Clear
-    Call LoadData
-End Sub
-
-Private Sub cmdUpdate_Click()
-    Dim Stock As Long
-
-    If txtMedID.Text = "" Then
-        MsgBox "Select a record from the grid first.", vbExclamation
-        Exit Sub
-    End If
-
-    If Not IsNumeric(txtQty.Text) Then
-        MsgBox "Stock must be numeric.", vbExclamation
-        Exit Sub
-    End If
-    Stock = CLng(txtQty.Text)
-
-    If MsgBox("Update this medicine?", vbYesNo + vbQuestion) = vbNo Then Exit Sub
-
-    cn.Execute "UPDATE medicine_master SET " & _
-               "MedName='" & Replace(txtMedName.Text, "'", "''") & "', " & _
-               "Manufacturer='" & Replace(txtManufacturer.Text, "'", "''") & "', " & _
-               "StockQty=" & Stock & " " & _
-               "WHERE MedID=" & txtMedID.Text
-
-    MsgBox "Medicine updated successfully!", vbInformation
-
-    If Not frmUserDB Is Nothing Then
-        frmUserDB.LoadMedicineCombo frmUserDB.cboMedicine
-    End If
-
-    Call Clear
-    Call LoadData
-End Sub
-
 Private Sub cmdDelete_Click()
     If txtMedID.Text = "" Then
         MsgBox "Select a record first.", vbExclamation
@@ -128,13 +68,8 @@ Private Sub cmdDelete_Click()
     If MsgBox("Delete this medicine?", vbYesNo + vbCritical) = vbYes Then
         cn.Execute "DELETE FROM medicine_master WHERE MedID=" & txtMedID.Text
         MsgBox "Deleted successfully!", vbInformation
-
-        If Not frmUserDB Is Nothing Then
-            frmUserDB.LoadMedicineCombo frmUserDB.cboMedicine
-        End If
-
-        Call Clear
-        Call LoadData
+         Clear
+        LoadData
     End If
 End Sub
 
@@ -156,7 +91,7 @@ Private Sub cmdClear_Click()
 End Sub
 
 Private Sub Clear()
-    txtMedID.Text = GetNextMedID
+    txtMedID.Text = ""
     txtMedName.Text = ""
     txtManufacturer.Text = ""
     txtQty.Text = ""
@@ -169,3 +104,4 @@ End Sub
 Private Sub cmdClose_Click()
     Unload Me
 End Sub
+
