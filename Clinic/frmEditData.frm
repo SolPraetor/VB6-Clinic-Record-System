@@ -128,6 +128,116 @@ Begin VB.Form frmEditData
          Width           =   1575
       End
    End
+   Begin VB.Frame fraEditPrescription 
+      Height          =   6495
+      Left            =   0
+      TabIndex        =   18
+      Top             =   1920
+      Width           =   8415
+      Begin VB.CommandButton cmdRefresh 
+         Caption         =   "Refresh"
+         Height          =   615
+         Left            =   5040
+         TabIndex        =   34
+         Top             =   480
+         Width           =   855
+      End
+      Begin VB.ComboBox cboMedicine 
+         Height          =   315
+         Left            =   2880
+         Style           =   2  'Dropdown List
+         TabIndex        =   30
+         Top             =   600
+         Width           =   2055
+      End
+      Begin VB.TextBox txtDiagnosis 
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   15
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   4455
+         Left            =   240
+         MultiLine       =   -1  'True
+         ScrollBars      =   2  'Vertical
+         TabIndex        =   22
+         Top             =   1800
+         Width           =   3735
+      End
+      Begin VB.TextBox txtTreatment 
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   15
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   4455
+         Left            =   4200
+         MultiLine       =   -1  'True
+         ScrollBars      =   2  'Vertical
+         TabIndex        =   21
+         Top             =   1800
+         Width           =   3975
+      End
+      Begin VB.Label lblDiagnosis 
+         Caption         =   "Diagnosis"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   18
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   615
+         Left            =   240
+         TabIndex        =   25
+         Top             =   1320
+         Width           =   1575
+      End
+      Begin VB.Label lblTreatment 
+         Caption         =   "Treatment"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   18
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   615
+         Left            =   4200
+         TabIndex        =   24
+         Top             =   1320
+         Width           =   1815
+      End
+      Begin VB.Label lblMedicine 
+         Caption         =   "Medicine Given"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   18
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   615
+         Left            =   240
+         TabIndex        =   23
+         Top             =   480
+         Width           =   2535
+      End
+   End
    Begin VB.Frame fraEditDataWindow 
       Height          =   6375
       Left            =   0
@@ -268,7 +378,7 @@ Begin VB.Form frmEditData
          _ExtentY        =   661
          _Version        =   393216
          CustomFormat    =   """MM/dd/yyyy"""
-         Format          =   143917059
+         Format          =   144113667
          CurrentDate     =   46073
       End
       Begin VB.Label lblName 
@@ -425,116 +535,6 @@ Begin VB.Form frmEditData
          Width           =   1575
       End
    End
-   Begin VB.Frame fraEditPrescription 
-      Height          =   6495
-      Left            =   0
-      TabIndex        =   18
-      Top             =   1920
-      Width           =   8415
-      Begin VB.CommandButton cmdRefresh 
-         Caption         =   "Refresh"
-         Height          =   615
-         Left            =   5040
-         TabIndex        =   34
-         Top             =   480
-         Width           =   855
-      End
-      Begin VB.ComboBox cboMedicine 
-         Height          =   315
-         Left            =   2880
-         Style           =   2  'Dropdown List
-         TabIndex        =   30
-         Top             =   600
-         Width           =   2055
-      End
-      Begin VB.TextBox txtDiagnosis 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   15
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   4455
-         Left            =   240
-         MultiLine       =   -1  'True
-         ScrollBars      =   2  'Vertical
-         TabIndex        =   22
-         Top             =   1800
-         Width           =   3735
-      End
-      Begin VB.TextBox txtTreatment 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   15
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   4455
-         Left            =   4200
-         MultiLine       =   -1  'True
-         ScrollBars      =   2  'Vertical
-         TabIndex        =   21
-         Top             =   1800
-         Width           =   3975
-      End
-      Begin VB.Label lblDiagnosis 
-         Caption         =   "Diagnosis"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   18
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   615
-         Left            =   240
-         TabIndex        =   25
-         Top             =   1320
-         Width           =   1575
-      End
-      Begin VB.Label lblTreatment 
-         Caption         =   "Treatment"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   18
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   615
-         Left            =   4200
-         TabIndex        =   24
-         Top             =   1320
-         Width           =   1815
-      End
-      Begin VB.Label lblMedicine 
-         Caption         =   "Medicine Given"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   18
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   615
-         Left            =   240
-         TabIndex        =   23
-         Top             =   480
-         Width           =   2535
-      End
-   End
 End
 Attribute VB_Name = "frmEditData"
 Attribute VB_GlobalNameSpace = False
@@ -626,7 +626,7 @@ Private Sub Clear()
     cboSex.ListIndex = -1
     txtSymptom.Text = ""
     txtCondition.Text = ""
-    txtContact.Text = ""
+    txtContact.Text = "09"
     txtComplain.Text = ""
     cboMedicine.ListIndex = -1
     txtTreatment.Text = ""
@@ -747,13 +747,16 @@ Private Sub cmdUpdate_Click()
         Exit Sub
     End If
     
-    Dim ContactNo As String
-    ContactNo = Trim(txtContact.Text)
+    If txtContact.Text = "09" Then
+        txtContact.Text = ""
+    End If
 
-    If ContactNo <> "" And Not ContactNo Like "09#########" Then
-        MsgBox "Invalid ContactNo number format.", vbExclamation
-        txtContact.SetFocus
-        Exit Sub
+    If txtContact.Text <> "" Then
+        If Not txtContact.Text Like "09#########" Then
+            MsgBox "Invalid Contact Details.", vbExclamation
+            txtContact.SetFocus
+            Exit Sub
+        End If
     End If
 
     rs!Name = txtName.Text
@@ -907,6 +910,28 @@ Public Sub InitializeForm()
         fraEditPrescription.Visible = False
     End If
     
+End Sub
+
+Private Sub txtContact_KeyPress(KeyAscii As Integer)
+    If txtContact.SelStart < 3 And KeyAscii = vbKeyBack Then
+        KeyAscii = 0
+    End If
+
+  If KeyAscii = vbKeyBack Then Exit Sub
+    If Len(txtContact.Text) = 0 Then
+        If Chr(KeyAscii) <> "0" Then
+            KeyAscii = 0
+            Exit Sub
+        End If
+    End If
+
+    If Len(txtContact.Text) = 1 Then
+        If Chr(KeyAscii) <> "9" Then
+            KeyAscii = 0
+            Exit Sub
+        End If
+    End If
+
 End Sub
 
 Private Sub txtContact_Change()

@@ -2,24 +2,24 @@ VERSION 5.00
 Object = "{CDE57A40-8B86-11D0-B3C6-00A0C90AEA82}#1.0#0"; "MSDATGRD.OCX"
 Begin VB.Form frmMedicineInventory 
    BorderStyle     =   1  'Fixed Single
-   Caption         =   "Form1"
+   Caption         =   "Medicine Inventory"
    ClientHeight    =   6480
    ClientLeft      =   45
    ClientTop       =   390
-   ClientWidth     =   13635
+   ClientWidth     =   13935
    ControlBox      =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
    ScaleHeight     =   6480
-   ScaleWidth      =   13635
+   ScaleWidth      =   13935
    StartUpPosition =   2  'CenterScreen
    Begin VB.Frame fraMedInv 
       Height          =   6495
       Left            =   0
       TabIndex        =   0
       Top             =   0
-      Width           =   13695
+      Width           =   13935
       Begin VB.TextBox txtAlertStatus 
          Height          =   735
          Left            =   7920
@@ -46,11 +46,11 @@ Begin VB.Form frmMedicineInventory
       End
       Begin MSDataGridLib.DataGrid DGMedicine 
          Height          =   5175
-         Left            =   6840
+         Left            =   6960
          TabIndex        =   1
          Top             =   1080
-         Width           =   6615
-         _ExtentX        =   11668
+         Width           =   6855
+         _ExtentX        =   12091
          _ExtentY        =   9128
          _Version        =   393216
          HeadLines       =   1
@@ -113,35 +113,7 @@ Begin VB.Form frmMedicineInventory
          Left            =   0
          TabIndex        =   5
          Top             =   0
-         Width           =   6735
-         Begin VB.TextBox txtMedID 
-            Height          =   615
-            Left            =   2400
-            TabIndex        =   14
-            Top             =   1080
-            Width           =   1575
-         End
-         Begin VB.TextBox txtMedName 
-            Height          =   615
-            Left            =   2400
-            TabIndex        =   13
-            Top             =   1800
-            Width           =   1575
-         End
-         Begin VB.TextBox txtQty 
-            Height          =   615
-            Left            =   2400
-            TabIndex        =   12
-            Top             =   2520
-            Width           =   1575
-         End
-         Begin VB.TextBox txtManufacturer 
-            Height          =   615
-            Left            =   2400
-            TabIndex        =   11
-            Top             =   3240
-            Width           =   1575
-         End
+         Width           =   6855
          Begin VB.CommandButton cmdAdd 
             Caption         =   "Add"
             BeginProperty Font 
@@ -155,12 +127,12 @@ Begin VB.Form frmMedicineInventory
             EndProperty
             Height          =   735
             Left            =   120
-            TabIndex        =   10
+            TabIndex        =   18
             Top             =   240
             Width           =   1215
          End
-         Begin VB.CommandButton cmdUpdate 
-            Caption         =   "Update"
+         Begin VB.CommandButton cmdOrder 
+            Caption         =   "Order Medicine"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   15
@@ -172,9 +144,41 @@ Begin VB.Form frmMedicineInventory
             EndProperty
             Height          =   735
             Left            =   2760
-            TabIndex        =   9
+            TabIndex        =   17
             Top             =   240
-            Width           =   1215
+            Width           =   1335
+         End
+         Begin VB.TextBox txtMedID 
+            Height          =   615
+            Left            =   2400
+            Locked          =   -1  'True
+            TabIndex        =   12
+            Top             =   1080
+            Width           =   1575
+         End
+         Begin VB.TextBox txtMedName 
+            Height          =   615
+            Left            =   2400
+            Locked          =   -1  'True
+            TabIndex        =   11
+            Top             =   1800
+            Width           =   1575
+         End
+         Begin VB.TextBox txtQty 
+            Height          =   615
+            Left            =   2400
+            Locked          =   -1  'True
+            TabIndex        =   10
+            Top             =   2520
+            Width           =   1575
+         End
+         Begin VB.TextBox txtManufacturer 
+            Height          =   615
+            Left            =   2400
+            Locked          =   -1  'True
+            TabIndex        =   9
+            Top             =   3240
+            Width           =   1575
          End
          Begin VB.CommandButton cmdDelete 
             Caption         =   "Delete"
@@ -205,7 +209,7 @@ Begin VB.Form frmMedicineInventory
                Strikethrough   =   0   'False
             EndProperty
             Height          =   735
-            Left            =   4080
+            Left            =   4200
             TabIndex        =   7
             Top             =   240
             Width           =   1215
@@ -222,7 +226,7 @@ Begin VB.Form frmMedicineInventory
                Strikethrough   =   0   'False
             EndProperty
             Height          =   735
-            Left            =   5400
+            Left            =   5520
             TabIndex        =   6
             Top             =   240
             Width           =   1215
@@ -240,7 +244,7 @@ Begin VB.Form frmMedicineInventory
             EndProperty
             Height          =   615
             Left            =   120
-            TabIndex        =   18
+            TabIndex        =   16
             Top             =   1200
             Width           =   1695
          End
@@ -257,7 +261,7 @@ Begin VB.Form frmMedicineInventory
             EndProperty
             Height          =   615
             Left            =   120
-            TabIndex        =   17
+            TabIndex        =   15
             Top             =   1920
             Width           =   2055
          End
@@ -274,7 +278,7 @@ Begin VB.Form frmMedicineInventory
             EndProperty
             Height          =   615
             Left            =   120
-            TabIndex        =   16
+            TabIndex        =   14
             Top             =   2640
             Width           =   2055
          End
@@ -291,7 +295,7 @@ Begin VB.Form frmMedicineInventory
             EndProperty
             Height          =   615
             Left            =   120
-            TabIndex        =   15
+            TabIndex        =   13
             Top             =   3360
             Width           =   1935
          End
@@ -308,7 +312,7 @@ Begin VB.Form frmMedicineInventory
             Strikethrough   =   0   'False
          EndProperty
          Height          =   495
-         Left            =   6840
+         Left            =   6960
          TabIndex        =   4
          Top             =   360
          Width           =   855
@@ -325,34 +329,51 @@ Option Explicit
 Dim cn As ADODB.Connection
 Dim rs As ADODB.Recordset
 
+
+Private Sub cmdAdd_Click()
+    frmOrderMedicine.txtMedID.Text = GetNextMedID
+    frmOrderMedicine.Show
+End Sub
+
+Private Sub cmdOrder_Click()
+    If txtMedID.Text = "" Then
+        MsgBox "Select a record first.", vbExclamation
+        Exit Sub
+    End If
+
+    frmOrderMedicine.txtMedID.Text = txtMedID.Text
+    frmOrderMedicine.txtMedName.Text = txtMedName.Text
+    frmOrderMedicine.txtManufacturer.Text = txtManufacturer.Text
+    
+    frmOrderMedicine.Show vbModal
+End Sub
+
 Private Sub Form_Load()
     Set cn = New ADODB.Connection
     cn.Open "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & _
             App.Path & "\ClinicRecord.mdb"
 
     txtMedID.Locked = True
-    txtMedID.Text = GetNextMedID
 End Sub
 
 Private Function GetNextMedID() As Long
-    Dim rsID As ADODB.Recordset
-    Set rsID = New ADODB.Recordset
+    Set rs = New ADODB.Recordset
 
-    rsID.CursorLocation = adUseClient
-    rsID.Open "SELECT MAX(MedID) AS MaxID FROM medicine_master", cn, _
+    rs.CursorLocation = adUseClient
+    rs.Open "SELECT MAX(MedID) AS MaxID FROM medicine_master", cn, _
               adOpenForwardOnly, adLockReadOnly
 
-    If rsID.EOF Or IsNull(rsID!MaxID) Then
+    If rs.EOF Or IsNull(rs!MaxID) Then
         GetNextMedID = 1
     Else
-        GetNextMedID = rsID!MaxID + 1
+        GetNextMedID = rs!MaxID + 1
     End If
 
-    rsID.Close
-    Set rsID = Nothing
+    rs.Close
+    Set rs = Nothing
 End Function
 
-Private Sub LoadData()
+Public Sub LoadData()
     Set rs = New ADODB.Recordset
     rs.CursorLocation = adUseClient
 
@@ -364,83 +385,6 @@ Private Sub LoadData()
     Set DGMedicine.DataSource = rs
 End Sub
 
-Private Sub cmdAdd_Click()
-    Dim Stock As Long
-    Dim rsCheck As ADODB.Recordset
-
-    If txtMedName.Text = "" Or txtManufacturer.Text = "" Or txtQty.Text = "" Then
-        MsgBox "Please complete all fields.", vbExclamation
-        Exit Sub
-    End If
-
-    If Not IsNumeric(txtQty.Text) Then
-        MsgBox "Stock must be numeric.", vbExclamation
-        Exit Sub
-    End If
-    Stock = CLng(txtQty.Text)
-
-    Set rsCheck = New ADODB.Recordset
-    rsCheck.CursorLocation = adUseClient
-    rsCheck.Open "SELECT * FROM medicine_master WHERE MedName='" & _
-                 Replace(txtMedName.Text, "'", "''") & "'", cn, adOpenStatic, adLockReadOnly
-
-    If Not rsCheck.EOF Then
-        MsgBox "Medicine name already exists!", vbExclamation
-        rsCheck.Close
-        Set rsCheck = Nothing
-        Exit Sub
-    End If
-    rsCheck.Close
-    Set rsCheck = Nothing
-
-    If MsgBox("Add this medicine?", vbYesNo + vbQuestion) = vbNo Then Exit Sub
-
-    cn.Execute "INSERT INTO medicine_master (MedID, MedName, Manufacturer, StockQty) VALUES (" & _
-               GetNextMedID & ", '" & Replace(txtMedName.Text, "'", "''") & "', '" & _
-               Replace(txtManufacturer.Text, "'", "''") & "', " & Stock & ")"
-
-    MsgBox "Medicine added successfully!", vbInformation
-
-    If Not frmUserDB Is Nothing Then
-        frmUserDB.LoadMedicineCombo frmUserDB.cboMedicine
-    End If
-
-    Call Clear
-    Call LoadData
-End Sub
-
-Private Sub cmdUpdate_Click()
-    Dim Stock As Long
-
-    If txtMedID.Text = "" Then
-        MsgBox "Select a record from the grid first.", vbExclamation
-        Exit Sub
-    End If
-
-    If Not IsNumeric(txtQty.Text) Then
-        MsgBox "Stock must be numeric.", vbExclamation
-        Exit Sub
-    End If
-    Stock = CLng(txtQty.Text)
-
-    If MsgBox("Update this medicine?", vbYesNo + vbQuestion) = vbNo Then Exit Sub
-
-    cn.Execute "UPDATE medicine_master SET " & _
-               "MedName='" & Replace(txtMedName.Text, "'", "''") & "', " & _
-               "Manufacturer='" & Replace(txtManufacturer.Text, "'", "''") & "', " & _
-               "StockQty=" & Stock & " " & _
-               "WHERE MedID=" & txtMedID.Text
-
-    MsgBox "Medicine updated successfully!", vbInformation
-
-    If Not frmUserDB Is Nothing Then
-        frmUserDB.LoadMedicineCombo frmUserDB.cboMedicine
-    End If
-
-    Call Clear
-    Call LoadData
-End Sub
-
 Private Sub cmdDelete_Click()
     If txtMedID.Text = "" Then
         MsgBox "Select a record first.", vbExclamation
@@ -450,13 +394,8 @@ Private Sub cmdDelete_Click()
     If MsgBox("Delete this medicine?", vbYesNo + vbCritical) = vbYes Then
         cn.Execute "DELETE FROM medicine_master WHERE MedID=" & txtMedID.Text
         MsgBox "Deleted successfully!", vbInformation
-
-        If Not frmUserDB Is Nothing Then
-            frmUserDB.LoadMedicineCombo frmUserDB.cboMedicine
-        End If
-
-        Call Clear
-        Call LoadData
+         Clear
+        LoadData
     End If
 End Sub
 
@@ -478,7 +417,7 @@ Private Sub cmdClear_Click()
 End Sub
 
 Private Sub Clear()
-    txtMedID.Text = GetNextMedID
+    txtMedID.Text = ""
     txtMedName.Text = ""
     txtManufacturer.Text = ""
     txtQty.Text = ""
@@ -491,3 +430,4 @@ End Sub
 Private Sub cmdClose_Click()
     Unload Me
 End Sub
+

@@ -143,7 +143,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Dim cn As ADODB.Connection
-Dim rsReport As ADODB.Recordset
+Dim rs As ADODB.Recordset
 
 Private Sub Form_Load()
 
@@ -154,72 +154,72 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub cmdLog_Click()
-    If Not rsReport Is Nothing Then
-        If rsReport.State = adStateOpen Then rsReport.Close
+    If Not rs Is Nothing Then
+        If rs.State = adStateOpen Then rs.Close
     End If
 
-    Set rsReport = New ADODB.Recordset
-    rsReport.CursorLocation = adUseClient
+    Set rs = New ADODB.Recordset
+    rs.CursorLocation = adUseClient
 
 
-    rsReport.Open "SELECT ID, Name, Complain, Diagnosis, Treatment, Medicine " & _
+    rs.Open "SELECT ID, Name, Complain, Diagnosis, Treatment, Medicine " & _
                   "FROM patient_master ORDER BY ID ASC", _
                   cn, adOpenStatic, adLockReadOnly
 
-    If rsReport.EOF Then
+    If rs.EOF Then
         MsgBox "No records found.", vbInformation
         Exit Sub
     End If
 
-    Set DGReport.DataSource = rsReport
+    Set DGReport.DataSource = rs
     MsgBox "Daily Consultation Log Loaded.", vbInformation
     
 End Sub
 
 Private Sub cmdInventory_Click()
-    If Not rsReport Is Nothing Then
-        If rsReport.State = adStateOpen Then rsReport.Close
+    If Not rs Is Nothing Then
+        If rs.State = adStateOpen Then rs.Close
     End If
 
-    Set rsReport = New ADODB.Recordset
-    rsReport.CursorLocation = adUseClient
+    Set rs = New ADODB.Recordset
+    rs.CursorLocation = adUseClient
 
-    rsReport.Open "SELECT MedID, MedName, Manufacturer, StockQty, " & _
+    rs.Open "SELECT MedID, MedName, Manufacturer, StockQty, " & _
                   "IIF(StockQty <= 10, 'LOW', 'OK') AS AlertStatus " & _
                   "FROM medicine_master ORDER BY MedName ASC", _
                   cn, adOpenStatic, adLockReadOnly
 
-    If rsReport.EOF Then
+    If rs.EOF Then
         MsgBox "No inventory records found.", vbInformation
         Exit Sub
     End If
 
-    Set DGReport.DataSource = rsReport
+    Set DGReport.DataSource = rs
     MsgBox "Inventory Report Loaded.", vbInformation
 
 End Sub
 
 Private Sub cmdLowStock_Click()
-    If Not rsReport Is Nothing Then
-        If rsReport.State = adStateOpen Then rsReport.Close
+    If Not rs Is Nothing Then
+        If rs.State = adStateOpen Then rs.Close
     End If
 
-    Set rsReport = New ADODB.Recordset
-    rsReport.CursorLocation = adUseClient
+    Set rs = New ADODB.Recordset
+    rs.CursorLocation = adUseClient
 
-    rsReport.Open "SELECT MedID, MedName, Manufacturer, StockQty, " & _
+    rs.Open "SELECT MedID, MedName, Manufacturer, StockQty, " & _
                   "IIF(StockQty <= 10, 'LOW', 'OK') AS AlertStatus " & _
                   "FROM medicine_master " & _
                   "WHERE StockQty <= 10 " & _
                   "ORDER BY StockQty ASC", _
                   cn, adOpenStatic, adLockReadOnly
 
-    If rsReport.EOF Then
+    If rs.EOF Then
         MsgBox "No low stock medicines.", vbInformation
         Exit Sub
     End If
 
-    Set DGReport.DataSource = rsReport
+    Set DGReport.DataSource = rs
     MsgBox "Low Stock Report Loaded.", vbInformation
 
 End Sub
@@ -275,17 +275,17 @@ End Sub
 
 Private Sub cmdPrint_Click()
     On Error GoTo PrintError
-    If rsReport Is Nothing Then
+    If rs Is Nothing Then
         MsgBox "No report loaded.", vbExclamation
         Exit Sub
     End If
 
-    If rsReport.State <> adStateOpen Then
+    If rs.State <> adStateOpen Then
         MsgBox "Report not available.", vbExclamation
         Exit Sub
     End If
 
-    If rsReport.EOF Then
+    If rs.EOF Then
         MsgBox "Report is empty.", vbExclamation
         Exit Sub
     End If
@@ -295,7 +295,7 @@ Private Sub cmdPrint_Click()
         Exit Sub
     End If
 
-    rsReport.MoveFirst
+    rs.MoveFirst
     Printer.FontSize = 12
     Printer.FontBold = True
     Printer.Print "CLINIC REPORT"
@@ -307,19 +307,19 @@ Private Sub cmdPrint_Click()
     Dim field As Integer
     Dim rowText As String
 
-    Do While Not rsReport.EOF
+    Do While Not rs.EOF
 
         rowText = ""
 
-        For field = 0 To rsReport.Fields.Count - 1
-            rowText = rowText & rsReport.Fields(field).Name & ": " & _
-                      rsReport.Fields(field).Value & "   "
+        For field = 0 To rs.Fields.Count - 1
+            rowText = rowText & rs.Fields(field).Name & ": " & _
+                      rs.Fields(field).Value & "   "
         Next field
 
         Printer.Print rowText
         Printer.Print String(80, "-")
 
-        rsReport.MoveNext
+        rs.MoveNext
     Loop
 
     Printer.EndDoc
@@ -342,8 +342,8 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
 
-    If Not rsReport Is Nothing Then
-        If rsReport.State = adStateOpen Then rsReport.Close
+    If Not rs Is Nothing Then
+        If rs.State = adStateOpen Then rs.Close
     End If
 
     If Not cn Is Nothing Then
@@ -353,17 +353,17 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub cmdExportPDF_Click()
-    If rsReport Is Nothing Then
+    If rs Is Nothing Then
         MsgBox "No report loaded.", vbExclamation
         Exit Sub
     End If
 
-    If rsReport.State <> adStateOpen Then
+    If rs.State <> adStateOpen Then
         MsgBox "Report not available.", vbExclamation
         Exit Sub
     End If
 
-    If rsReport.EOF Then
+    If rs.EOF Then
         MsgBox "Report is empty.", vbExclamation
         Exit Sub
     End If
@@ -389,7 +389,7 @@ Private Sub cmdExportPDF_Click()
     Printer.CurrentX = 1000
     Printer.CurrentY = 1000
 
-    rsReport.MoveFirst
+    rs.MoveFirst
     Printer.FontSize = 12
     Printer.FontBold = True
     Printer.Print "CLINIC REPORT"
@@ -401,15 +401,15 @@ Private Sub cmdExportPDF_Click()
     Dim field As Integer
     Dim rowText As String
     
-    Do While Not rsReport.EOF
+    Do While Not rs.EOF
 
         rowText = ""
 
-        For field = 0 To rsReport.Fields.Count - 1
-            If IsNull(rsReport.Fields(field).Value) Then
+        For field = 0 To rs.Fields.Count - 1
+            If IsNull(rs.Fields(field).Value) Then
                 rowText = rowText & ""
             Else
-                rowText = rowText & rsReport.Fields(i).Value
+                rowText = rowText & rs.Fields(i).Value
             End If
 
             rowText = rowText & "    "
@@ -422,7 +422,7 @@ Private Sub cmdExportPDF_Click()
             Printer.CurrentY = 1000
         End If
 
-        rsReport.MoveNext
+        rs.MoveNext
     Loop
 
     Printer.EndDoc
