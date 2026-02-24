@@ -140,11 +140,13 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'General
 Option Explicit
 
 Dim cn As ADODB.Connection
 Dim rs As ADODB.Recordset
 
+'Main Logic
 Private Sub Form_Load()
 
     Set cn = New ADODB.Connection
@@ -153,6 +155,19 @@ Private Sub Form_Load()
 
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer)
+
+    If Not rs Is Nothing Then
+        If rs.State = adStateOpen Then rs.Close
+    End If
+
+    If Not cn Is Nothing Then
+        If cn.State = adStateOpen Then cn.Close
+    End If
+
+End Sub
+
+'Record Load Codes
 Private Sub cmdLog_Click()
     If Not rs Is Nothing Then
         If rs.State = adStateOpen Then rs.Close
@@ -224,12 +239,17 @@ Private Sub cmdLowStock_Click()
 
 End Sub
 
-
+'Print Codes
 Private Sub cmdMedicalCert_Click()
     On Error GoTo PrintError
     Dim PID As String
 
-    PID = InputBox("Enter Patient ID to generate certificate:")
+    frmInputPID.PIDValue = ""
+    frmInputPID.Show vbModal
+
+    PID = frmInputPID.PIDValue
+    Unload frmInputPID
+
     If PID = "" Then Exit Sub
 
     Dim rsCert As New ADODB.Recordset
@@ -336,22 +356,6 @@ PrintError:
     Err.Clear
 End Sub
 
-Private Sub cmdClose_Click()
-    Unload Me
-End Sub
-
-Private Sub Form_Unload(Cancel As Integer)
-
-    If Not rs Is Nothing Then
-        If rs.State = adStateOpen Then rs.Close
-    End If
-
-    If Not cn Is Nothing Then
-        If cn.State = adStateOpen Then cn.Close
-    End If
-
-End Sub
-
 Private Sub cmdExportPDF_Click()
     If rs Is Nothing Then
         MsgBox "No report loaded.", vbExclamation
@@ -431,5 +435,6 @@ Private Sub cmdExportPDF_Click()
 
 End Sub
 
-
-
+Private Sub cmdClose_Click()
+    Unload Me
+End Sub

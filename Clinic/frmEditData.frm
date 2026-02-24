@@ -128,116 +128,6 @@ Begin VB.Form frmEditData
          Width           =   1575
       End
    End
-   Begin VB.Frame fraEditPrescription 
-      Height          =   6495
-      Left            =   0
-      TabIndex        =   18
-      Top             =   1920
-      Width           =   8415
-      Begin VB.CommandButton cmdRefresh 
-         Caption         =   "Refresh"
-         Height          =   615
-         Left            =   5040
-         TabIndex        =   34
-         Top             =   480
-         Width           =   855
-      End
-      Begin VB.ComboBox cboMedicine 
-         Height          =   315
-         Left            =   2880
-         Style           =   2  'Dropdown List
-         TabIndex        =   30
-         Top             =   600
-         Width           =   2055
-      End
-      Begin VB.TextBox txtDiagnosis 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   15
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   4455
-         Left            =   240
-         MultiLine       =   -1  'True
-         ScrollBars      =   2  'Vertical
-         TabIndex        =   22
-         Top             =   1800
-         Width           =   3735
-      End
-      Begin VB.TextBox txtTreatment 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   15
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   4455
-         Left            =   4200
-         MultiLine       =   -1  'True
-         ScrollBars      =   2  'Vertical
-         TabIndex        =   21
-         Top             =   1800
-         Width           =   3975
-      End
-      Begin VB.Label lblDiagnosis 
-         Caption         =   "Diagnosis"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   18
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   615
-         Left            =   240
-         TabIndex        =   25
-         Top             =   1320
-         Width           =   1575
-      End
-      Begin VB.Label lblTreatment 
-         Caption         =   "Treatment"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   18
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   615
-         Left            =   4200
-         TabIndex        =   24
-         Top             =   1320
-         Width           =   1815
-      End
-      Begin VB.Label lblMedicine 
-         Caption         =   "Medicine Given"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   18
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   615
-         Left            =   240
-         TabIndex        =   23
-         Top             =   480
-         Width           =   2535
-      End
-   End
    Begin VB.Frame fraEditDataWindow 
       Height          =   6375
       Left            =   0
@@ -378,7 +268,7 @@ Begin VB.Form frmEditData
          _ExtentY        =   661
          _Version        =   393216
          CustomFormat    =   """MM/dd/yyyy"""
-         Format          =   144113667
+         Format          =   144048131
          CurrentDate     =   46073
       End
       Begin VB.Label lblName 
@@ -535,6 +425,116 @@ Begin VB.Form frmEditData
          Width           =   1575
       End
    End
+   Begin VB.Frame fraEditPrescription 
+      Height          =   6495
+      Left            =   0
+      TabIndex        =   18
+      Top             =   1920
+      Width           =   8415
+      Begin VB.CommandButton cmdRefresh 
+         Caption         =   "Refresh"
+         Height          =   615
+         Left            =   5040
+         TabIndex        =   34
+         Top             =   480
+         Width           =   855
+      End
+      Begin VB.ComboBox cboMedicine 
+         Height          =   315
+         Left            =   2880
+         Style           =   2  'Dropdown List
+         TabIndex        =   30
+         Top             =   600
+         Width           =   2055
+      End
+      Begin VB.TextBox txtDiagnosis 
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   15
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   4455
+         Left            =   240
+         MultiLine       =   -1  'True
+         ScrollBars      =   2  'Vertical
+         TabIndex        =   22
+         Top             =   1800
+         Width           =   3735
+      End
+      Begin VB.TextBox txtTreatment 
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   15
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   4455
+         Left            =   4200
+         MultiLine       =   -1  'True
+         ScrollBars      =   2  'Vertical
+         TabIndex        =   21
+         Top             =   1800
+         Width           =   3975
+      End
+      Begin VB.Label lblDiagnosis 
+         Caption         =   "Diagnosis"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   18
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   615
+         Left            =   240
+         TabIndex        =   25
+         Top             =   1320
+         Width           =   1575
+      End
+      Begin VB.Label lblTreatment 
+         Caption         =   "Treatment"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   18
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   615
+         Left            =   4200
+         TabIndex        =   24
+         Top             =   1320
+         Width           =   1815
+      End
+      Begin VB.Label lblMedicine 
+         Caption         =   "Medicine Given"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   18
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   615
+         Left            =   240
+         TabIndex        =   23
+         Top             =   480
+         Width           =   2535
+      End
+   End
 End
 Attribute VB_Name = "frmEditData"
 Attribute VB_GlobalNameSpace = False
@@ -542,24 +542,14 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 'General
+Option Explicit
+
 Dim cn As ADODB.Connection
 Dim rs As ADODB.Recordset
 Public OpenPrescription As Boolean
 Private MedChanged As Boolean
 
-Private Sub cboMedicine_Change()
-    If cboMedicine.ListIndex <> -1 Then
-        MedChanged = True
-    Else
-        MedChanged = False
-    End If
-End Sub
-
-Private Sub cmdRefresh_Click()
-    LoadCombo
-End Sub
-
-'Necessary Codes
+'Main Logic
 Private Sub Form_Load()
     fraEditDataWindow.Visible = True
     fraEditPrescription.Visible = False
@@ -595,21 +585,44 @@ Private Sub Form_Load()
     
 End Sub
 
-Private Sub LoadCombo()
-    Dim rsMed As New ADODB.Recordset
-    rsMed.CursorLocation = adUseClient
-    rsMed.Open "SELECT MedName FROM medicine_master ORDER BY MedName ASC", cn, adOpenStatic, adLockReadOnly
+Private Sub Form_Unload(Cancel As Integer)
+    If Not rs Is Nothing Then
+        If rs.State = adStateOpen Then rs.Close
+    End If
+    If Not cn Is Nothing Then
+        If cn.State = adStateOpen Then cn.Close
+    End If
+End Sub
 
-    cboMedicine.Clear
-    Do While Not rsMed.EOF
-        cboMedicine.AddItem rsMed!MedName
-        rsMed.MoveNext
-    Loop
+'Helper Codes
+Private Sub ShowEditRecord()
+    If rs.EOF Or rs.BOF Then Exit Sub
+
+    txtName.Text = rs!Name
+    txtAddress.Text = rs!Address
+    txtAge.Text = IIf(IsNull(rs!Age), "", rs!Age)
+    If Not IsNull(rs!DOB) Then
+        dtpDOB.Value = rs!DOB
+    Else
+        dtpDOB.Value = Date
+    End If
     
-    cboMedicine.ListIndex = -1
-
-    rsMed.Close
-    Set rsMed = Nothing
+    If Not IsNull(rs!Sex) Then
+        If rs!Sex = "Male" Then
+            cboSex.ListIndex = 0
+        ElseIf rs!Sex = "Female" Then
+            cboSex.ListIndex = 1
+        Else
+            cboSex.ListIndex = -1
+        End If
+    Else
+        cboSex.ListIndex = -1
+    End If
+    
+    txtSymptom.Text = rs!Symptom
+    txtCondition.Text = rs!Condition
+    txtContact.Text = rs!Contact
+    txtComplain.Text = rs!Complain
 End Sub
 
 Private Sub ShowFrame(fra As Frame)
@@ -633,34 +646,21 @@ Private Sub Clear()
     txtDiagnosis.Text = ""
 End Sub
 
-Private Sub ShowEditRecord()
-    If rs.EOF Or rs.BOF Then Exit Sub
+Private Sub LoadCombo()
+    Dim rsMed As New ADODB.Recordset
+    rsMed.CursorLocation = adUseClient
+    rsMed.Open "SELECT MedName FROM medicine_master ORDER BY MedName ASC", cn, adOpenStatic, adLockReadOnly
 
-    txtName.Text = rs!Name
-    txtAddress.Text = rs!Address
-    txtAge.Text = IIf(IsNull(rs!age), "", rs!age)
-    If Not IsNull(rs!dob) Then
-        dtpDOB.Value = rs!dob
-    Else
-        dtpDOB.Value = Date
-    End If
+    cboMedicine.Clear
+    Do While Not rsMed.EOF
+        cboMedicine.AddItem rsMed!MedName
+        rsMed.MoveNext
+    Loop
     
-    If Not IsNull(rs!Sex) Then
-        If rs!Sex = "Male" Then
-            cboSex.ListIndex = 0
-        ElseIf rs!Sex = "Female" Then
-            cboSex.ListIndex = 1
-        Else
-            cboSex.ListIndex = -1
-        End If
-    Else
-        cboSex.ListIndex = -1
-    End If
-    
-    txtSymptom.Text = rs!Symptom
-    txtCondition.Text = rs!Condition
-    txtContact.Text = rs!Contact
-    txtComplain.Text = rs!Complain
+    cboMedicine.ListIndex = -1
+
+    rsMed.Close
+    Set rsMed = Nothing
 End Sub
 
 Private Sub LoadDropdown()
@@ -723,7 +723,73 @@ Private Sub LoadRecord(ByVal patientID As Long)
     End If
 End Sub
 
-'Command Codes
+Private Sub CalculateAge()
+
+    If dtpDOB.Value > Date Then
+        dtpDOB.Value = Date
+        Exit Sub
+    End If
+
+    Dim Age As Integer
+    Age = Year(Date) - Year(dtpDOB.Value)
+    If Month(Date) < Month(dtpDOB.Value) _
+    Or (Month(Date) = Month(dtpDOB.Value) And Day(Date) < Day(dtpDOB.Value)) Then
+        Age = Age - 1
+    End If
+
+    If Age < 0 Or Age > 121 Then
+        Exit Sub
+    End If
+
+    txtAge.Text = Age
+
+End Sub
+
+Public Sub InitializeForm()
+    fraEditDataWindow.Visible = True
+    fraEditPrescription.Visible = False
+    
+    If OpenPrescription Then
+        fraEditDataWindow.Visible = False
+        fraEditPrescription.Visible = True
+    Else
+        fraEditDataWindow.Visible = True
+        fraEditPrescription.Visible = False
+    End If
+    
+End Sub
+
+'Function Codes
+Private Function CapitalizeName(ByVal s As String) As String
+    Dim result As String
+    Dim i As Long
+    Dim ch As String
+    Dim capitalizeNext As Boolean
+    
+    result = ""
+    capitalizeNext = True
+    
+    For i = 1 To Len(s)
+        ch = Mid$(s, i, 1)
+        
+        If capitalizeNext And ch >= "a" And ch <= "z" Then
+            ch = UCase$(ch)
+            capitalizeNext = False
+        ElseIf Not capitalizeNext And ch >= "A" And ch <= "Z" Then
+            ch = LCase$(ch)
+        ElseIf ch = " " Or ch = "-" Or ch = "'" Or ch = "." Then
+            capitalizeNext = True
+        Else
+            capitalizeNext = False
+        End If
+        
+        result = result & ch
+    Next i
+    
+    CapitalizeName = result
+End Function
+
+'Navigation Codes
 Private Sub cmdUpdate_Click()
     If rs.EOF Or rs.BOF Then
         MsgBox "No patient record selected.", vbExclamation
@@ -763,12 +829,12 @@ Private Sub cmdUpdate_Click()
     rs!Address = txtAddress.Text
 
     If Trim(txtAge.Text) <> "" Then
-        rs!age = CLng(txtAge.Text)
+        rs!Age = CLng(txtAge.Text)
     Else
-        rs!age = Null
+        rs!Age = Null
     End If
 
-    rs!dob = dtpDOB.Value
+    rs!DOB = dtpDOB.Value
     rs!Sex = cboSex.Text
     rs!Symptom = txtSymptom.Text
     rs!Condition = txtCondition.Text
@@ -862,54 +928,57 @@ Private Sub cmdInv_Click()
     frmMedicineInventory.Show
 End Sub
 
-Private Sub Form_Unload(Cancel As Integer)
-    If Not rs Is Nothing Then
-        If rs.State = adStateOpen Then rs.Close
-    End If
-    If Not cn Is Nothing Then
-        If cn.State = adStateOpen Then cn.Close
+Private Sub cboMedicine_Change()
+    If cboMedicine.ListIndex <> -1 Then
+        MedChanged = True
+    Else
+        MedChanged = False
     End If
 End Sub
 
-'New Codes
+Private Sub cmdRefresh_Click()
+    LoadCombo
+End Sub
+
 Private Sub dtpDOB_Change()
     CalculateAge
 End Sub
 
-Private Sub CalculateAge()
-
-    If dtpDOB.Value > Date Then
-        dtpDOB.Value = Date
-        Exit Sub
+Private Sub txtContact_Change()
+    Dim i As Integer
+    Dim temp As String
+    
+    For i = 1 To Len(txtContact.Text)
+        If Mid(txtContact.Text, i, 1) Like "[0-9]" Then
+            temp = temp & Mid(txtContact.Text, i, 1)
+        End If
+    Next i
+    
+    If txtContact.Text <> temp Then
+        txtContact.Text = temp
+        txtContact.SelStart = Len(temp)
     End If
-
-    Dim age As Integer
-    age = Year(Date) - Year(dtpDOB.Value)
-    If Month(Date) < Month(dtpDOB.Value) _
-    Or (Month(Date) = Month(dtpDOB.Value) And Day(Date) < Day(dtpDOB.Value)) Then
-        age = age - 1
-    End If
-
-    If age < 0 Or age > 121 Then
-        Exit Sub
-    End If
-
-    txtAge.Text = age
 
 End Sub
 
-Public Sub InitializeForm()
-    fraEditDataWindow.Visible = True
-    fraEditPrescription.Visible = False
-    
-    If OpenPrescription Then
-        fraEditDataWindow.Visible = False
-        fraEditPrescription.Visible = True
-    Else
-        fraEditDataWindow.Visible = True
-        fraEditPrescription.Visible = False
+'Key Ascii Codes
+Private Sub FilterInput(KeyAscii As Integer, _
+                        ByVal AllowNumbers As Boolean, _
+                        ByVal AllowExtraChars As String)
+
+    If KeyAscii = vbKeyBack Then Exit Sub
+
+    If (KeyAscii >= 65 And KeyAscii <= 90) Or _
+       (KeyAscii >= 97 And KeyAscii <= 122) Then Exit Sub
+       
+    If AllowNumbers Then
+        If KeyAscii >= 48 And KeyAscii <= 57 Then Exit Sub
     End If
+
+    If InStr(AllowExtraChars, Chr(KeyAscii)) > 0 Then Exit Sub
     
+    KeyAscii = 0
+
 End Sub
 
 Private Sub txtContact_KeyPress(KeyAscii As Integer)
@@ -934,19 +1003,66 @@ Private Sub txtContact_KeyPress(KeyAscii As Integer)
 
 End Sub
 
-Private Sub txtContact_Change()
-    Dim i As Integer
-    Dim temp As String
-    
-    For i = 1 To Len(txtContact.Text)
-        If Mid(txtContact.Text, i, 1) Like "[0-9]" Then
-            temp = temp & Mid(txtContact.Text, i, 1)
-        End If
-    Next i
-    
-    If txtContact.Text <> temp Then
-        txtContact.Text = temp
-        txtContact.SelStart = Len(temp)
-    End If
+Private Sub txtName_KeyPress(KeyAscii As Integer)
+    FilterInput KeyAscii, False, " .-'"
+End Sub
 
+Private Sub txtAddress_KeyPress(KeyAscii As Integer)
+    FilterInput KeyAscii, True, " ,.-#"
+End Sub
+
+Private Sub txtCondition_KeyPress(KeyAscii As Integer)
+    FilterInput KeyAscii, False, " ,.-()"
+End Sub
+
+Private Sub txtSymptom_KeyPress(KeyAscii As Integer)
+    FilterInput KeyAscii, False, " ,.-()"
+End Sub
+
+Private Sub txtComplain_KeyPress(KeyAscii As Integer)
+    FilterInput KeyAscii, True, " ,.-#()"
+End Sub
+
+Private Sub txtName_LostFocus()
+    txtName.Text = CapitalizeName(txtName.Text)
+End Sub
+
+Private Sub txtName_Validate(Cancel As Boolean)
+    If txtName.Text = "" Then Exit Sub
+    If txtName.Text Like "*[!A-Za-z .'-]*" Then
+        MsgBox "Invalid characters in Name.", vbExclamation
+        Cancel = True
+    End If
+End Sub
+
+Private Sub txtAddress_Validate(Cancel As Boolean)
+    If txtAddress.Text = "" Then Exit Sub
+    If txtAddress.Text Like "*[!A-Za-z0-9 ,.\#-]*" Then
+        MsgBox "Invalid characters.", vbExclamation
+        Cancel = True
+    End If
+End Sub
+
+Private Sub txtCondition_Validate(Cancel As Boolean)
+    If txtCondition.Text = "" Then Exit Sub
+        If txtCondition.Text Like "*[!A-Za-z ,.#()-]*" Then
+        MsgBox "Invalid characters.", vbExclamation
+        Cancel = True
+    End If
+End Sub
+
+Private Sub txtSymptom_Validate(Cancel As Boolean)
+    If txtSymptom.Text = "" Then Exit Sub
+        If txtCondition.Text Like "*[!A-Za-z ,.#()-]*" Then
+        MsgBox "Invalid characters.", vbExclamation
+        Cancel = True
+    End If
+End Sub
+
+Private Sub txtComplain_Validate(Cancel As Boolean)
+    If txtComplain.Text = "" Then Exit Sub
+    If txtComplain.Text Like "*[!A-Za-z0-9 ,.\#()-]*" Then
+        MsgBox "Invalid characters.", vbExclamation
+        Cancel = True
+    End If
 End Sub

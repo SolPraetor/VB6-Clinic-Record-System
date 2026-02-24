@@ -229,6 +229,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   735
             Left            =   1920
+            MaxLength       =   4
             TabIndex        =   33
             Top             =   840
             Width           =   2175
@@ -513,6 +514,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   735
             Left            =   4080
+            MaxLength       =   4
             TabIndex        =   42
             Top             =   240
             Width           =   2175
@@ -661,7 +663,7 @@ Begin VB.Form frmUserDB
             _ExtentY        =   661
             _Version        =   393216
             CustomFormat    =   """MM/dd/yyyy"""
-            Format          =   144113667
+            Format          =   144048131
             CurrentDate     =   46073
          End
          Begin VB.CommandButton cmdAddConfirm 
@@ -1122,47 +1124,15 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'General
 Option Explicit
 
-' General
 Dim cn As ADODB.Connection
 Dim rs As ADODB.Recordset
 Dim SelectID As Long
 Public OpenLog As Boolean
 
-'Necessary Codes
-Public Sub LoadCombo(cbo As ComboBox)
-    Set rs = New ADODB.Recordset
-
-    If cn Is Nothing Then
-        Set cn = New ADODB.Connection
-        cn.Open "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & App.Path & "\ClinicRecord.mdb"
-    End If
-
-    rs.CursorLocation = adUseClient
-    rs.Open "SELECT MedName FROM medicine_master ORDER BY MedName ASC", _
-               cn, adOpenStatic, adLockReadOnly
-
-    cbo.Clear
-    Do While Not rs.EOF
-        cbo.AddItem rs!MedName
-        rs.MoveNext
-    Loop
-    
-        cbo.ListIndex = -1
-
-    rs.Close
-    Set rs = Nothing
-End Sub
-
-Private Sub cmdMedRefresh_Click()
-    LoadCombo cboMedicine
-End Sub
-
-Private Sub cmdReport_Click()
-    frmReport.Show
-End Sub
-
+'Main Logic
 Private Sub Form_Load()
     fraAddPatient.Visible = False
     fraRemovePatient.Visible = False
@@ -1194,22 +1164,15 @@ Private Sub Form_Load()
     
 End Sub
 
-Private Sub ShowFrame(fra As Frame)
-    fraAddPatient.Visible = False
-    fraRemovePatient.Visible = False
-    fraPatientLog.Visible = False
-    fraPrescription.Visible = False
-    fra.Visible = True
-End Sub
-
-Private Sub ShowRecord()
+'Helper Codes
+Private Sub ShowRecord() 'Check and display records
     If rs Is Nothing Then Exit Sub
     If rs.EOF Or rs.BOF Then Exit Sub
 
     txtName.Text = rs!Name
-    txtAge.Text = IIf(IsNull(rs!age), "", rs!age)
-    If Not IsNull(rs!dob) Then
-        dtpDOB.Value = rs!dob
+    txtAge.Text = IIf(IsNull(rs!Age), "", rs!Age)
+    If Not IsNull(rs!DOB) Then
+        dtpDOB.Value = rs!DOB
     Else
         dtpDOB.Value = Date
     End If
@@ -1235,7 +1198,15 @@ Private Sub ShowRecord()
     txtDiagnosis.Text = IIf(IsNull(rs!Diagnosis), "", rs!Diagnosis)
 End Sub
 
-Private Sub Clear()
+Private Sub ShowFrame(fra As Frame) 'Hide Frames
+    fraAddPatient.Visible = False
+    fraRemovePatient.Visible = False
+    fraPatientLog.Visible = False
+    fraPrescription.Visible = False
+    fra.Visible = True
+End Sub
+
+Private Sub Clear() 'Clear filled inputs and assign default inputs
     txtName.Text = ""
     txtAge.Text = ""
     dtpDOB.Value = Date
@@ -1245,13 +1216,62 @@ Private Sub Clear()
     txtCondition.Text = ""
     txtContact.Text = "09"
     txtComplain.Text = ""
+    txtDiagnosis.Text = ""
+    txtTreatment.Text = ""
     lblSelectedID.Caption = "Selected Patient: None"
     lblSelectedPatientRID.Caption = "Selected Patient: None"
     SelectID = 0
     cmdPConfirm.Enabled = False
 End Sub
 
-Private Function GetNextID() As Long
+Public Sub LoadCombo(cbo As ComboBox) 'Loads combo boxes
+    Set rs = New ADODB.Recordset
+
+    If cn Is Nothing Then
+        Set cn = New ADODB.Connection
+        cn.Open "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & App.Path & "\ClinicRecord.mdb"
+    End If
+
+    rs.CursorLocation = adUseClient
+    rs.Open "SELECT MedName FROM medicine_master ORDER BY MedName ASC", _
+               cn, adOpenStatic, adLockReadOnly
+
+    cbo.Clear
+    Do While Not rs.EOF
+        cbo.AddItem rs!MedName
+        rs.MoveNext
+    Loop
+    
+        cbo.ListIndex = -1
+
+    rs.Close
+    Set rs = Nothing
+End Sub
+
+Private Sub CalculateAge()
+
+    If dtpDOB.Value > Date Then
+        dtpDOB.Value = Date
+        Exit Sub
+    End If
+
+    Dim Age As Integer
+    Age = Year(Date) - Year(dtpDOB.Value)
+    If Month(Date) < Month(dtpDOB.Value) _
+    Or (Month(Date) = Month(dtpDOB.Value) And Day(Date) < Day(dtpDOB.Value)) Then
+        Age = Age - 1
+    End If
+
+    If Age < 0 Or Age > 121 Then
+        Exit Sub
+    End If
+
+    txtAge.Text = Age
+
+End Sub
+
+'Function Codes
+Private Function GetNextID() As Long 'Display next unused IDs
     Set rs = New ADODB.Recordset
 
     rs.Open "SELECT MAX(ID) AS MaxID FROM patient_master", cn, adOpenForwardOnly, adLockReadOnly
@@ -1263,39 +1283,62 @@ Private Function GetNextID() As Long
     rs.Close
     Set rs = Nothing
 End Function
-'Command Codes
-Private Sub cmdLogout_Click()
-    If MsgBox("Are you sure you want to log out?", vbYesNo + vbQuestion) = vbYes Then
-        Unload Me
-        frmLogin.Show
-        MsgBox "Successfully Logged Out!"
-    End If
-End Sub
 
+Private Function CapitalizeName(ByVal s As String) As String 'Capitalizes names
+    Dim result As String
+    Dim i As Long
+    Dim ch As String
+    Dim capitalizeNext As Boolean
+    
+    result = ""
+    capitalizeNext = True
+    
+    For i = 1 To Len(s)
+        ch = Mid$(s, i, 1)
+        
+        If capitalizeNext And ch >= "a" And ch <= "z" Then
+            ch = UCase$(ch)
+            capitalizeNext = False
+        ElseIf Not capitalizeNext And ch >= "A" And ch <= "Z" Then
+            ch = LCase$(ch)
+        ElseIf ch = " " Or ch = "-" Or ch = "'" Or ch = "." Then
+            capitalizeNext = True
+        Else
+            capitalizeNext = False
+        End If
+        
+        result = result & ch
+    Next i
+    
+    CapitalizeName = result
+End Function
+
+'Add Patient Codes
 Private Sub cmdAddPatient_Click()
     ShowFrame fraAddPatient
     Clear
     txtID.Text = GetNextID
 End Sub
 
-Private Sub cmdRemovePatient_Click()
-    ShowFrame fraRemovePatient
-    Clear
+Private Sub dtpDOB_Change()
+    CalculateAge
 End Sub
 
-Private Sub cmdPrescription_Click()
-    ShowFrame fraPrescription
-    Clear
-End Sub
+Private Sub txtContact_Change()
+    Dim i As Integer
+    Dim temp As String
+    
+    For i = 1 To Len(txtContact.Text)
+        If Mid(txtContact.Text, i, 1) Like "[0-9]" Then
+            temp = temp & Mid(txtContact.Text, i, 1)
+        End If
+    Next i
+    
+    If txtContact.Text <> temp Then
+        txtContact.Text = temp
+        txtContact.SelStart = Len(temp)
+    End If
 
-Private Sub cmdPatientLog_Click()
-    ShowFrame fraPatientLog
-    Clear
-End Sub
-
-
-Private Sub cmdInv_Click()
-    frmMedicineInventory.Show
 End Sub
 
 Private Sub cmdAddConfirm_Click()
@@ -1326,8 +1369,8 @@ Private Sub cmdAddConfirm_Click()
     
     rs.AddNew
     rs!Name = txtName.Text
-    If IsNumeric(txtAge.Text) And Val(txtAge.Text) >= 0 Then rs!age = CLng(txtAge.Text)
-    rs!dob = dtpDOB.Value
+    If IsNumeric(txtAge.Text) And Val(txtAge.Text) >= 0 Then rs!Age = CLng(txtAge.Text)
+    rs!DOB = dtpDOB.Value
     rs!Address = txtAddress.Text
     rs!Sex = cboSex.Text
     rs!Symptom = txtSymptom.Text
@@ -1348,9 +1391,22 @@ Private Sub cmdReturn_Click()
     fraAddPatient.Visible = False
 End Sub
 
-Private Sub txtPID_Change()
+'Prescription Codes
+Private Sub cmdPrescription_Click()
+    ShowFrame fraPrescription
+    Clear
+End Sub
 
-    cmdPConfirm.Enabled = False   ' Disable by default
+Private Sub cmdInv_Click()
+    frmMedicineInventory.Show
+End Sub
+
+Private Sub cmdMedRefresh_Click()
+    LoadCombo cboMedicine
+End Sub
+
+Private Sub txtPID_Change()
+    cmdPConfirm.Enabled = False
 
     If Trim(txtPID.Text) = "" Then
         lblSelectedID.Caption = "Selected Patient: None"
@@ -1403,12 +1459,7 @@ Private Sub cmdPEdit_Click()
 End Sub
 
 Private Sub cmdPConfirm_Click()
-    If SelectID = 0 Then
-        MsgBox "Please select a patient first using the Select button.", vbExclamation
-        Exit Sub
-    End If
-
-    Set rs = New ADODB.Recordset
+Set rs = New ADODB.Recordset
     rs.Open "SELECT * FROM patient_master WHERE ID = " & SelectID, cn, adOpenDynamic, adLockOptimistic
 
     If rs.EOF Then
@@ -1455,56 +1506,112 @@ Private Sub cmdPConfirm_Click()
     ShowFrame fraPrescription
 End Sub
 
-Private Sub cmdRConfirm_Click()
+'Archive Codes
+Private Sub cmdRemovePatient_Click()
+    ShowFrame fraRemovePatient
+    Clear
+End Sub
+
+Private Sub txtRID_Change()
     If Trim(txtRID.Text) = "" Then
-        MsgBox "Please enter a Patient ID.", vbExclamation
+        lblSelectedPatientRID.Caption = "Selected Patient: None"
         Exit Sub
     End If
+
     If Not IsNumeric(txtRID.Text) Then
-        MsgBox "ID must be a number.", vbExclamation
+        lblSelectedPatientRID.Caption = ""
         Exit Sub
     End If
 
     Dim patientID As Long
+    
     patientID = CLng(txtRID.Text)
-
+    
     Set rs = New ADODB.Recordset
-    rs.Open "SELECT * FROM patient_master WHERE ID = " & patientID, cn, adOpenDynamic, adLockOptimistic
+    rs.Open "SELECT Name FROM patient_master WHERE ID = " & patientID, _
+                cn, adOpenForwardOnly, adLockReadOnly
 
     If rs.EOF Then
-        MsgBox "No record found with that ID.", vbInformation
-        Exit Sub
-    End If
-
-    If MsgBox("Are you sure you want to delete this record?", vbYesNo + vbQuestion) = vbYes Then
-        Set cn = New ADODB.Connection
-        cn.Open "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & App.Path & "\ClinicRecord.mdb"
-
-        Dim Treatment As String, Diagnosis As String, Medicine As String
-        Treatment = IIf(IsNull(rs!Treatment), "NULL", "'" & Replace(rs!Treatment, "'", "''") & "'")
-        Diagnosis = IIf(IsNull(rs!Diagnosis), "NULL", "'" & Replace(rs!Diagnosis, "'", "''") & "'")
-        Medicine = IIf(IsNull(rs!Medicine), "NULL", "'" & Replace(rs!Medicine, "'", "''") & "'")
-        Dim dobVal As String, ageVal As String
-        dobVal = IIf(IsNull(rs!dob), "NULL", "#" & Format(rs!dob, "mm/dd/yyyy") & "#")
-        ageVal = IIf(IsNull(rs!age), "NULL", rs!age)
-
-        Dim sqlArchive As String
-        sqlArchive = "INSERT INTO archive_master (ID, Name, Address, Age, DOB, Sex, Symptom, Condition, ContactNo, Complain, Treatment, Diagnosis, Medicine) VALUES (" & _
-                     rs!ID & ", '" & Replace(rs!Name, "'", "''") & "', '" & Replace(rs!Address, "'", "''") & "', " & _
-                     ageVal & ", " & dobVal & ", '" & Replace(rs!Sex, "'", "''") & "', '" & Replace(rs!Symptom, "'", "''") & "', '" & _
-                     Replace(rs!Condition, "'", "''") & "', '" & Replace(rs!Contact, "'", "''") & "', '" & _
-                     Replace(rs!Complain, "'", "''") & "', " & Treatment & ", " & Diagnosis & ", " & Medicine & ")"
-
-        cn.Execute sqlArchive
-        cn.Close
-        Set cn = Nothing
-
-        rs.Delete
-        MsgBox "Record archived and deleted successfully!"
+        lblSelectedPatientRID.Caption = "No patient found"
+    Else
+        lblSelectedPatientRID.Caption = "Selected Patient: " & rs!Name
     End If
 
     rs.Close
     Set rs = Nothing
+
+End Sub
+
+Private Sub cmdRConfirm_Click()
+    Dim patientID As Long
+    Dim Treatment As String, Diagnosis As String, Medicine As String
+    Dim DOB As String, Age As String
+    Dim Archive As String
+
+    If Trim(txtRID.Text) = "" Or Not IsNumeric(txtRID.Text) Then
+        MsgBox "Enter a valid Patient ID.", vbExclamation
+        Exit Sub
+    End If
+
+    patientID = CLng(txtRID.Text)
+    Set rs = New ADODB.Recordset
+    rs.Open "SELECT * FROM patient_master WHERE ID=" & patientID, cn, adOpenDynamic, adLockOptimistic
+
+    If rs.EOF Then
+        MsgBox "No record found with that ID.", vbInformation
+        rs.Close
+        Set rs = Nothing
+        Exit Sub
+    End If
+
+    If MsgBox("Are you sure you want to delete this record?", vbYesNo + vbQuestion) = vbNo Then
+        rs.Close
+        Set rs = Nothing
+        Exit Sub
+    End If
+
+    If IsNull(rs!Treatment) Then
+        Treatment = "NULL"
+    Else
+        Treatment = "'" & Replace$(rs!Treatment, "'", "''") & "'"
+    End If
+
+    If IsNull(rs!Diagnosis) Then
+        Diagnosis = "NULL"
+    Else
+        Diagnosis = "'" & Replace$(rs!Diagnosis, "'", "''") & "'"
+    End If
+
+    If IsNull(rs!Medicine) Then
+        Medicine = "NULL"
+    Else
+        Medicine = "'" & Replace$(rs!Medicine, "'", "''") & "'"
+    End If
+
+    If IsNull(rs!DOB) Then
+        DOB = "NULL"
+    Else
+        DOB = "#" & Format$(rs!DOB, "mm/dd/yyyy") & "#"
+    End If
+
+    If IsNull(rs!Age) Then
+        Age = "NULL"
+    Else
+        Age = CStr(rs!Age)
+    End If
+
+    Archive = "INSERT INTO archive_master (ID, Name, Address, Age, DOB, Sex, Symptom, Condition, Contact, Complain, Treatment, Diagnosis, Medicine) VALUES (" & _
+                 rs!ID & ", '" & Replace(rs!Name, "'", "''") & "', '" & Replace(rs!Address, "'", "''") & "', " & _
+                 Age & ", " & DOB & ", '" & Replace(rs!Sex, "'", "''") & "', '" & Replace(rs!Symptom, "'", "''") & "', '" & _
+                 Replace(rs!Condition, "'", "''") & "', '" & Replace(rs!Contact, "'", "''") & "', '" & _
+                 Replace(rs!Complain, "'", "''") & "', " & Treatment & ", " & Diagnosis & ", " & Medicine & ")"
+
+    cn.Execute Archive
+    rs.Delete
+    rs.Close
+    Set rs = Nothing
+
+    MsgBox "Record archived and deleted successfully!"
 End Sub
 
 Private Sub cmdLoadArchive_Click()
@@ -1529,6 +1636,16 @@ Private Sub cmdRefreshArchive_Click()
         Set rs = Nothing
     End If
     cmdLoadArchive_Click
+End Sub
+
+'Log Codes
+Private Sub cmdReport_Click()
+    frmReport.Show
+End Sub
+
+Private Sub cmdPatientLog_Click()
+    ShowFrame fraPatientLog
+    Clear
 End Sub
 
 Private Sub cmdEdit_Click()
@@ -1574,30 +1691,40 @@ Private Sub cmdRefresh_Click()
     cmdLoad_Click
 End Sub
 
-'New Codes
-Private Sub dtpDOB_Change()
-    CalculateAge
+'Logout Codes
+Private Sub cmdLogout_Click()
+    If MsgBox("Are you sure you want to log out?", vbYesNo + vbQuestion) = vbYes Then
+        Unload Me
+        frmLogin.Show
+        MsgBox "Successfully Logged Out!"
+    End If
 End Sub
 
-Private Sub CalculateAge()
+'Key Ascii Codes
+Private Sub NumOnly(KeyAscii As Integer)
+    If KeyAscii = vbKeyBack Then Exit Sub
+        If KeyAscii < 48 Or KeyAscii > 57 Then
+            KeyAscii = 0
+        End If
 
-    If dtpDOB.Value > Date Then
-        dtpDOB.Value = Date
-        Exit Sub
+End Sub
+
+Private Sub FilterInput(KeyAscii As Integer, _
+                        ByVal AllowNumbers As Boolean, _
+                        ByVal AllowExtraChars As String)
+
+    If KeyAscii = vbKeyBack Then Exit Sub
+
+    If (KeyAscii >= 65 And KeyAscii <= 90) Or _
+       (KeyAscii >= 97 And KeyAscii <= 122) Then Exit Sub
+       
+    If AllowNumbers Then
+        If KeyAscii >= 48 And KeyAscii <= 57 Then Exit Sub
     End If
 
-    Dim age As Integer
-    age = Year(Date) - Year(dtpDOB.Value)
-    If Month(Date) < Month(dtpDOB.Value) _
-    Or (Month(Date) = Month(dtpDOB.Value) And Day(Date) < Day(dtpDOB.Value)) Then
-        age = age - 1
-    End If
-
-    If age < 0 Or age > 121 Then
-        Exit Sub
-    End If
-
-    txtAge.Text = age
+    If InStr(AllowExtraChars, Chr(KeyAscii)) > 0 Then Exit Sub
+    
+    KeyAscii = 0
 
 End Sub
 
@@ -1608,49 +1735,112 @@ Private Sub txtContact_KeyPress(KeyAscii As Integer)
     
 End Sub
 
-Private Sub txtContact_Change()
-    Dim i As Integer
-    Dim temp As String
-    
-    For i = 1 To Len(txtContact.Text)
-        If Mid(txtContact.Text, i, 1) Like "[0-9]" Then
-            temp = temp & Mid(txtContact.Text, i, 1)
-        End If
-    Next i
-    
-    If txtContact.Text <> temp Then
-        txtContact.Text = temp
-        txtContact.SelStart = Len(temp)
-    End If
-
+Private Sub txtPID_KeyPress(KeyAscii As Integer)
+    NumOnly KeyAscii
 End Sub
 
-Private Sub txtRID_Change()
-    If Trim(txtRID.Text) = "" Then
-        lblSelectedPatientRID.Caption = "Selected Patient: None"
-        Exit Sub
+Private Sub txtRID_Keypress(KeyAscii As Integer)
+    NumOnly KeyAscii
+End Sub
+
+Private Sub txtName_KeyPress(KeyAscii As Integer)
+    FilterInput KeyAscii, False, " .-'"
+End Sub
+
+Private Sub txtAddress_KeyPress(KeyAscii As Integer)
+    FilterInput KeyAscii, True, " ,.-#'"
+End Sub
+
+Private Sub txtCondition_KeyPress(KeyAscii As Integer)
+    FilterInput KeyAscii, False, " ,.-()"
+End Sub
+
+Private Sub txtSymptom_KeyPress(KeyAscii As Integer)
+    FilterInput KeyAscii, False, " ,.-()"
+End Sub
+
+Private Sub txtComplain_KeyPress(KeyAscii As Integer)
+    FilterInput KeyAscii, True, " ,.-#()"
+End Sub
+
+Private Sub txtDiagnosis_KeyPress(KeyAscii As Integer)
+    FilterInput KeyAscii, True, " ,.-#()"
+End Sub
+
+Private Sub txtTreatment_KeyPress(KeyAscii As Integer)
+    FilterInput KeyAscii, True, " ,.-#()"
+End Sub
+
+Private Sub txtName_LostFocus()
+    txtName.Text = CapitalizeName(txtName.Text)
+End Sub
+
+Private Sub txtName_Validate(Cancel As Boolean)
+    If txtName.Text = "" Then Exit Sub
+    If txtName.Text Like "*[!A-Za-z .'-]*" Then
+        MsgBox "Invalid characters in Name.", vbExclamation
+        Cancel = True
     End If
+End Sub
 
-    If Not IsNumeric(txtRID.Text) Then
-        lblSelectedPatientRID.Caption = ""
-        Exit Sub
+Private Sub txtAddress_Validate(Cancel As Boolean)
+    If txtAddress.Text = "" Then Exit Sub
+    If txtAddress.Text Like "*[!A-Za-z0-9 ,.\#'-]*" Then
+        MsgBox "Invalid characters.", vbExclamation
+        Cancel = True
     End If
+End Sub
 
-    Dim patientID As Long
-    
-    patientID = CLng(txtRID.Text)
-    
-    Set rs = New ADODB.Recordset
-    rs.Open "SELECT Name FROM patient_master WHERE ID = " & patientID, _
-                cn, adOpenForwardOnly, adLockReadOnly
-
-    If rs.EOF Then
-        lblSelectedPatientRID.Caption = "No patient found"
-    Else
-        lblSelectedPatientRID.Caption = "Selected Patient: " & rs!Name
+Private Sub txtCondition_Validate(Cancel As Boolean)
+    If txtCondition.Text = "" Then Exit Sub
+        If txtCondition.Text Like "*[!A-Za-z ,.#()-]*" Then
+        MsgBox "Invalid characters.", vbExclamation
+        Cancel = True
     End If
+End Sub
 
-    rs.Close
-    Set rs = Nothing
+Private Sub txtSymptom_Validate(Cancel As Boolean)
+    If txtSymptom.Text = "" Then Exit Sub
+        If txtCondition.Text Like "*[!A-Za-z ,.#()-]*" Then
+        MsgBox "Invalid characters.", vbExclamation
+        Cancel = True
+    End If
+End Sub
 
+Private Sub txtComplain_Validate(Cancel As Boolean)
+    If txtComplain.Text = "" Then Exit Sub
+    If txtComplain.Text Like "*[!A-Za-z0-9 ,.\#()-]*" Then
+        MsgBox "Invalid characters.", vbExclamation
+        Cancel = True
+    End If
+End Sub
+
+Private Sub txtDiagnosis_Validate(Cancel As Boolean)
+    If txtDiagnosis.Text = "" Then Exit Sub
+    If txtDiagnosis.Text Like "*[!A-Za-z0-9 ,.\#()-]*" Then
+        MsgBox "Invalid characters.", vbExclamation
+        Cancel = True
+    End If
+End Sub
+
+Private Sub txtTreatment_Validate(Cancel As Boolean)
+    If txtTreatment.Text = "" Then Exit Sub
+    If txtTreatment.Text Like "*[!A-Za-z0-9 ,.\#()-]*" Then
+        MsgBox "Invalid characters.", vbExclamation
+        Cancel = True
+    End If
+End Sub
+
+Private Sub txtPID_Validate(Cancel As Boolean)
+    If txtID.Text <> "" And Not IsNumeric(txtID.Text) Then
+        MsgBox "Numbers only.", vbExclamation
+        Cancel = True
+    End If
+End Sub
+
+Private Sub txtRID_Validate(Cancel As Boolean)
+    If txtID.Text <> "" And Not IsNumeric(txtID.Text) Then
+        MsgBox "Numbers only.", vbExclamation
+        Cancel = True
+    End If
 End Sub

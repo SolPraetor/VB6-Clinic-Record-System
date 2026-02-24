@@ -58,6 +58,7 @@ Begin VB.Form frmOrderMedicine
    Begin VB.TextBox txtQty 
       Height          =   615
       Left            =   2400
+      MaxLength       =   2
       TabIndex        =   2
       Top             =   1680
       Width           =   1575
@@ -151,45 +152,87 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'General
 Option Explicit
+
 Dim cn As ADODB.Connection
 Dim rs As ADODB.Recordset
 
+'Main Logic
 Private Sub Form_Load()
     Set cn = New ADODB.Connection
     cn.Open "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & _
             App.Path & "\ClinicRecord.mdb"
 End Sub
 
+'Order Codes
 Private Sub cmdOrder_Click()
     Dim OrderQty As Long
     Dim CurrentStock As Long
     Dim NewStock As Long
     Dim MedName As String
-    
-    If Not IsNumeric(txtQty.Text) Or txtQty.Text = "" Then
-        MsgBox "Enter order quantity.", vbExclamation
+    Dim Manufacturer As String
+    Const MaxOrder As Long = 50
+    Const MaxStock As Long = 200
+
+    If txtQty.Text = "" Or Not IsNumeric(txtQty.Text) Then
+        MsgBox "Enter a valid numeric order quantity.", vbExclamation
         Exit Sub
     End If
-    
-    If Not IsNumeric(txtMedID.Text) Or txtMedID.Text = "" Then
-        MsgBox "Invalid Medicine ID.", vbExclamation
-        Exit Sub
-    End If
-    
+
     OrderQty = CLng(txtQty.Text)
-    MedName = Trim(txtMedName.Text)
     
     If OrderQty <= 0 Then
         MsgBox "Order quantity must be greater than zero.", vbExclamation
         Exit Sub
     End If
     
-    If MedName = "" Or Trim(txtManufacturer.Text) = "" Then
-        MsgBox "Medicine name and manufacturer are required for new records.", vbExclamation
+    If OrderQty > MaxOrder Then
+        MsgBox "You cannot order more than " & MaxOrder & " units at a time.", vbExclamation
         Exit Sub
     End If
 
+    If txtMedID.Text = "" Or Not IsNumeric(txtMedID.Text) Then
+        MsgBox "Invalid Medicine ID.", vbExclamation
+        Exit Sub
+    End If
+
+    MedName = Trim(txtMedName.Text)
+    Manufacturer = Trim(txtManufacturer.Text)
+
+    If MedName = "" Or Manufacturer = "" Then
+        MsgBox "Medicine name and manufacturer are required.", vbExclamation
+        Exit Sub
+    End If
+
+    If MedName Like "*[!A-Za-z0-9 .'-]*" Or Manufacturer Like "*[!A-Za-z0-9 .'-]*" Then
+        MsgBox "Medicine name and manufacturer contain invalid characters.", vbExclamation
+        Exit Sub
+    End If
+
+    If MedName Like "*[A-Za-z]*" = False Then
+        MsgBox "Medicine name must contain at least one letter.", vbExclamation
+        Exit Sub
+    End If
+    
+    If Manufacturer Like "*[A-Za-z]*" = False Then
+        MsgBox "Manufacturer must contain at least one letter.", vbExclamation
+        Exit Sub
+    End If
+    
+    Set rs = New ADODB.Recordset
+    rs.Open "SELECT MedID FROM medicine_master WHERE MedName='" & Replace(MedName, "'", "''") & "' AND Manufacturer='" & Replace(Manufacturer, "'", "''") & "'", _
+                 cn, adOpenForwardOnly, adLockReadOnly
+
+    If Not rs.EOF Then
+        MsgBox "Medicine already exists.", vbExclamation
+        rs.Close
+        Set rs = Nothing
+        Exit Sub
+    End If
+    rs.Close
+    Set rs = Nothing
+    
     Set rs = New ADODB.Recordset
     rs.Open "SELECT StockQty FROM medicine_master WHERE MedID=" & txtMedID.Text, _
             cn, adOpenForwardOnly, adLockReadOnly
@@ -202,21 +245,34 @@ Private Sub cmdOrder_Click()
             Set rs = Nothing
             Exit Sub
         End If
+
+        If OrderQty > MaxStock Then
+            MsgBox "Cannot add more than " & MaxStock & " units to stock.", vbExclamation
+            rs.Close
+            Set rs = Nothing
+            Exit Sub
+        End If
         
         cn.Execute "INSERT INTO medicine_master (MedID, MedName, Manufacturer, StockQty) VALUES (" & _
                    txtMedID.Text & ", '" & _
-                   Replace(txtMedName.Text, "'", "''") & "', '" & _
-                   Replace(txtManufacturer.Text, "'", "''") & "', " & _
+                   Replace(MedName, "'", "''") & "', '" & _
+                   Replace(Manufacturer, "'", "''") & "', " & _
                    OrderQty & ")"
-                   
-        MsgBox "New medicine added successfully!", vbInformation
         
+        MsgBox "New medicine added successfully!", vbInformation
         NewStock = OrderQty
         
     Else
         CurrentStock = rs!StockQty
         NewStock = CurrentStock + OrderQty
-        
+
+        If NewStock > MaxStock Then
+            MsgBox "Total stock cannot exceed " & MaxStock & " units.", vbExclamation
+            rs.Close
+            Set rs = Nothing
+            Exit Sub
+        End If
+
         If MsgBox("Confirm order of " & OrderQty & _
                   " units for medicine: " & MedName & " ?", _
                   vbYesNo + vbQuestion, "Update Stock") = vbNo Then
@@ -227,24 +283,23 @@ Private Sub cmdOrder_Click()
         
         cn.Execute "UPDATE medicine_master SET StockQty=" & NewStock & _
                    " WHERE MedID=" & txtMedID.Text
-                   
         MsgBox "Stock updated successfully!", vbInformation
-        
     End If
 
     rs.Close
     Set rs = Nothing
 
     txtQty.Text = NewStock
-    
+
     If Not frmMedicineInventory Is Nothing Then
         frmMedicineInventory.LoadData
     End If
+    Unload Me
 End Sub
 
 Private Sub cmdClose_Click()
-    Unload Me
     If Not frmMedicineInventory Is Nothing Then
         frmMedicineInventory.LoadData
     End If
+    Unload Me
 End Sub

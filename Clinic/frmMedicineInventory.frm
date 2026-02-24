@@ -23,6 +23,7 @@ Begin VB.Form frmMedicineInventory
       Begin VB.TextBox txtAlertStatus 
          Height          =   735
          Left            =   7920
+         Locked          =   -1  'True
          TabIndex        =   3
          Top             =   240
          Width           =   1575
@@ -324,30 +325,13 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'General
 Option Explicit
 
 Dim cn As ADODB.Connection
 Dim rs As ADODB.Recordset
 
-
-Private Sub cmdAdd_Click()
-    frmOrderMedicine.txtMedID.Text = GetNextMedID
-    frmOrderMedicine.Show
-End Sub
-
-Private Sub cmdOrder_Click()
-    If txtMedID.Text = "" Then
-        MsgBox "Select a record first.", vbExclamation
-        Exit Sub
-    End If
-
-    frmOrderMedicine.txtMedID.Text = txtMedID.Text
-    frmOrderMedicine.txtMedName.Text = txtMedName.Text
-    frmOrderMedicine.txtManufacturer.Text = txtManufacturer.Text
-    
-    frmOrderMedicine.Show vbModal
-End Sub
-
+'Main Logic
 Private Sub Form_Load()
     Set cn = New ADODB.Connection
     cn.Open "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & _
@@ -356,6 +340,41 @@ Private Sub Form_Load()
     txtMedID.Locked = True
 End Sub
 
+'Helper Codes
+Private Sub Clear()
+    txtMedID.Text = ""
+    txtMedName.Text = ""
+    txtManufacturer.Text = ""
+    txtQty.Text = ""
+    txtAlertStatus.Text = ""
+End Sub
+
+Public Sub LoadData()
+    Set rs = New ADODB.Recordset
+    rs.CursorLocation = adUseClient
+
+    rs.Open "SELECT MedID, MedName, Manufacturer, StockQty, " & _
+            "IIF(StockQty <= 10, 'LOW', 'OK') AS AlertStatus " & _
+            "FROM medicine_master ORDER BY MedID ASC", _
+            cn, adOpenStatic, adLockReadOnly
+
+    Set DGMedicine.DataSource = rs
+End Sub
+
+Private Sub DGMedicine_RowColChange(LastRow As Variant, ByVal LastCol As Integer)
+    If DGMedicine.ApproxCount = 0 Then Exit Sub
+
+    txtMedID.Text = DGMedicine.Columns(0).Text
+    txtMedName.Text = DGMedicine.Columns(1).Text
+    txtManufacturer.Text = DGMedicine.Columns(2).Text
+    txtQty.Text = DGMedicine.Columns(3).Text
+    txtAlertStatus.Text = DGMedicine.Columns(4).Text
+    If txtAlertStatus.Text = "LOW" Then
+        MsgBox "Warning: Stock for this medicine is LOW!", vbExclamation, "Low Stock Alert"
+    End If
+End Sub
+
+'Function Codes
 Private Function GetNextMedID() As Long
     Set rs = New ADODB.Recordset
 
@@ -373,16 +392,25 @@ Private Function GetNextMedID() As Long
     Set rs = Nothing
 End Function
 
-Public Sub LoadData()
-    Set rs = New ADODB.Recordset
-    rs.CursorLocation = adUseClient
+'Navigation Codes
+Private Sub cmdAdd_Click()
+    frmOrderMedicine.txtMedID.Text = GetNextMedID
+    frmOrderMedicine.Show
+End Sub
 
-    rs.Open "SELECT MedID, MedName, Manufacturer, StockQty, " & _
-            "IIF(StockQty <= 10, 'LOW', 'OK') AS AlertStatus " & _
-            "FROM medicine_master ORDER BY MedID ASC", _
-            cn, adOpenStatic, adLockReadOnly
+Private Sub cmdOrder_Click()
+    If txtMedID.Text = "" Then
+        MsgBox "Select a record first.", vbExclamation
+        Exit Sub
+    End If
 
-    Set DGMedicine.DataSource = rs
+    frmOrderMedicine.txtMedID.Text = txtMedID.Text
+    frmOrderMedicine.txtMedName.Text = txtMedName.Text
+    frmOrderMedicine.txtMedName.Locked = True
+    frmOrderMedicine.txtManufacturer.Text = txtManufacturer.Text
+    frmOrderMedicine.txtManufacturer.Locked = True
+    
+    frmOrderMedicine.Show vbModal
 End Sub
 
 Private Sub cmdDelete_Click()
@@ -399,28 +427,8 @@ Private Sub cmdDelete_Click()
     End If
 End Sub
 
-Private Sub DGMedicine_RowColChange(LastRow As Variant, ByVal LastCol As Integer)
-    If DGMedicine.ApproxCount = 0 Then Exit Sub
-
-    txtMedID.Text = DGMedicine.Columns(0).Text
-    txtMedName.Text = DGMedicine.Columns(1).Text
-    txtManufacturer.Text = DGMedicine.Columns(2).Text
-    txtQty.Text = DGMedicine.Columns(3).Text
-    txtAlertStatus.Text = DGMedicine.Columns(4).Text
-    If txtAlertStatus.Text = "LOW" Then
-        MsgBox "Warning: Stock for this medicine is LOW!", vbExclamation, "Low Stock Alert"
-    End If
-End Sub
-
 Private Sub cmdClear_Click()
     Call Clear
-End Sub
-
-Private Sub Clear()
-    txtMedID.Text = ""
-    txtMedName.Text = ""
-    txtManufacturer.Text = ""
-    txtQty.Text = ""
 End Sub
 
 Private Sub cmdLoad_Click()
