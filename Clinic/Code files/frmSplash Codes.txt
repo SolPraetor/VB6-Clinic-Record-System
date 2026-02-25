@@ -1,0 +1,75 @@
+Option Explicit
+Private Declare Function GetWindowLong Lib "user32" _
+Alias "GetWindowLongA" (ByVal hwnd As Long, _
+ByVal nIndex As Long) As Long
+
+Private Declare Function SetWindowLong Lib "user32" _
+Alias "SetWindowLongA" (ByVal hwnd As Long, _
+ByVal nIndex As Long, _
+ByVal dwNewLong As Long) As Long
+
+Private Declare Function SetLayeredWindowAttributes Lib "user32" _
+(ByVal hwnd As Long, _
+ByVal crKey As Long, _
+ByVal bAlpha As Byte, _
+ByVal dwFlags As Long) As Long
+
+Private Const GWL_EXSTYLE = -20
+Private Const WS_EX_LAYERED = &H80000
+Private Const LWA_ALPHA = &H2
+
+Private FadeValue As Integer
+
+Private Sub Form_Load()
+    SetWindowLong Me.hwnd, GWL_EXSTYLE, _
+        GetWindowLong(Me.hwnd, GWL_EXSTYLE) Or WS_EX_LAYERED
+
+    FadeValue = 255
+    SetLayeredWindowAttributes Me.hwnd, 0, CByte(FadeValue), LWA_ALPHA
+
+    pbSplash.Min = 0
+    pbSplash.Max = 100
+    pbSplash.Value = 0
+
+    tmrLoad.Interval = 30
+    tmrLoad.Enabled = True
+
+    tmrFade.Interval = 15
+    tmrFade.Enabled = False
+
+End Sub
+
+Private Sub Label1_Click()
+
+End Sub
+
+Private Sub tmrLoad_Timer()
+
+    If pbSplash.Value < 100 Then
+        pbSplash.Value = pbSplash.Value + 2
+    Else
+        tmrLoad.Enabled = False
+        tmrFade.Enabled = True
+    End If
+
+End Sub
+
+Private Sub tmrFade_Timer()
+
+    FadeValue = FadeValue - 8
+
+    If FadeValue <= 0 Then
+        FadeValue = 0
+        SetLayeredWindowAttributes Me.hwnd, 0, 0, LWA_ALPHA
+        tmrFade.Enabled = False
+        Unload Me
+        Exit Sub
+    End If
+
+    If FadeValue > 255 Then FadeValue = 255
+    If FadeValue < 0 Then FadeValue = 0
+
+    SetLayeredWindowAttributes Me.hwnd, 0, CByte(FadeValue), LWA_ALPHA
+
+End Sub
+

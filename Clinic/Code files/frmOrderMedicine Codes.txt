@@ -67,25 +67,12 @@ Private Sub cmdOrder_Click()
     End If
     
     Set rs = New ADODB.Recordset
-    rs.Open "SELECT MedID FROM medicine_master WHERE MedName='" & Replace(MedName, "'", "''") & "' AND Manufacturer='" & Replace(Manufacturer, "'", "''") & "'", _
-                 cn, adOpenForwardOnly, adLockReadOnly
-
-    If Not rs.EOF Then
-        MsgBox "Medicine already exists.", vbExclamation
-        rs.Close
-        Set rs = Nothing
-        Exit Sub
-    End If
-    rs.Close
-    Set rs = Nothing
-    
-    Set rs = New ADODB.Recordset
     rs.Open "SELECT StockQty FROM medicine_master WHERE MedID=" & txtMedID.Text, _
-            cn, adOpenForwardOnly, adLockReadOnly
+            cn, adOpenDynamic, adLockOptimistic
 
     If rs.EOF Then
-        If MsgBox("Medicine does not exist." & vbCrLf & _
-                  "Add new medicine: " & MedName & " ?", _
+        
+        If MsgBox("Add new medicine: " & MedName & " ?", _
                   vbYesNo + vbQuestion, "Insert New Medicine") = vbNo Then
             rs.Close
             Set rs = Nothing
@@ -105,10 +92,11 @@ Private Sub cmdOrder_Click()
                    Replace(Manufacturer, "'", "''") & "', " & _
                    OrderQty & ")"
         
-        MsgBox "New medicine added successfully!", vbInformation
         NewStock = OrderQty
+        MsgBox "New medicine added successfully!", vbInformation
         
     Else
+        
         CurrentStock = rs!StockQty
         NewStock = CurrentStock + OrderQty
 
@@ -127,25 +115,22 @@ Private Sub cmdOrder_Click()
             Exit Sub
         End If
         
-        cn.Execute "UPDATE medicine_master SET StockQty=" & NewStock & _
-                   " WHERE MedID=" & txtMedID.Text
+        rs!StockQty = NewStock
+        rs.Update
+        
         MsgBox "Stock updated successfully!", vbInformation
+        
     End If
 
     rs.Close
     Set rs = Nothing
 
     txtQty.Text = NewStock
-
-    If Not frmMedicineInventory Is Nothing Then
-        frmMedicineInventory.LoadData
-    End If
+    frmOrderMedicine.Hide
     Unload Me
+    
 End Sub
-
 Private Sub cmdClose_Click()
-    If Not frmMedicineInventory Is Nothing Then
-        frmMedicineInventory.LoadData
-    End If
+    frmOrderMedicine.Hide
     Unload Me
 End Sub

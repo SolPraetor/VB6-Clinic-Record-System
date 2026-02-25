@@ -11,6 +11,7 @@ Private Sub Form_Load()
             App.Path & "\ClinicRecord.mdb"
 
     txtMedID.Locked = True
+    ClearGrid
 End Sub
 
 'Helper Codes
@@ -20,6 +21,23 @@ Private Sub Clear()
     txtManufacturer.Text = ""
     txtQty.Text = ""
     txtAlertStatus.Text = ""
+
+    ClearGrid
+    
+End Sub
+
+Private Sub ClearGrid()
+
+    Set rs = New ADODB.Recordset
+    rs.Fields.Append "MedID", adInteger
+    rs.Fields.Append "MedName", adVarChar, 50
+    rs.Fields.Append "Manufacturer", adVarChar, 50
+    rs.Fields.Append "StockQty", adInteger
+    rs.Fields.Append "AlertStatus", adVarChar, 12
+    
+    rs.Open
+    
+    Set DGMedicine.DataSource = rs
 End Sub
 
 Public Sub LoadData()
@@ -69,6 +87,7 @@ End Function
 Private Sub cmdAdd_Click()
     frmOrderMedicine.txtMedID.Text = GetNextMedID
     frmOrderMedicine.Show
+    Clear
 End Sub
 
 Private Sub cmdOrder_Click()
@@ -82,7 +101,7 @@ Private Sub cmdOrder_Click()
     frmOrderMedicine.txtMedName.Locked = True
     frmOrderMedicine.txtManufacturer.Text = txtManufacturer.Text
     frmOrderMedicine.txtManufacturer.Locked = True
-    
+    Clear
     frmOrderMedicine.Show vbModal
 End Sub
 
@@ -100,6 +119,34 @@ Private Sub cmdDelete_Click()
     End If
 End Sub
 
+Private Sub cmdUpdate_Click()
+    If txtMedID.Text = "" Then
+        MsgBox "Select a record first.", vbExclamation
+        Exit Sub
+    End If
+
+    If txtMedName.Locked = True Then
+        txtMedName.Locked = False
+        txtManufacturer.Locked = False
+        cmdUpdate.Default = True
+        MsgBox "You can now edit the fields. Press Enter/Escape to save/cancel changes. ", vbInformation
+        Exit Sub
+    End If
+
+    cn.Execute "UPDATE medicine_master SET " & _
+               "MedName='" & Replace(txtMedName.Text, "'", "''") & "', " & _
+               "Manufacturer='" & Replace(txtManufacturer.Text, "'", "''") & "' " & _
+               "WHERE MedID=" & txtMedID.Text
+
+    MsgBox "Record updated successfully!", vbInformation
+
+    txtMedName.Locked = True
+    txtManufacturer.Locked = True
+    cmdUpdate.Default = False
+    LoadData
+
+End Sub
+
 Private Sub cmdClear_Click()
     Call Clear
 End Sub
@@ -112,3 +159,22 @@ Private Sub cmdClose_Click()
     Unload Me
 End Sub
 
+Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
+
+    If KeyCode = vbKeyEscape Then
+        
+        If txtMedName.Locked = False Then
+            
+            txtMedName.Text = DGMedicine.Columns(1).Text
+            txtManufacturer.Text = DGMedicine.Columns(2).Text
+            
+            txtMedName.Locked = True
+            txtManufacturer.Locked = True
+            
+            MsgBox "Edit cancelled.", vbInformation
+            
+        End If
+        
+    End If
+
+End Sub
