@@ -8,6 +8,7 @@ Begin VB.Form frmMedicineInventory
    ClientTop       =   390
    ClientWidth     =   13935
    ControlBox      =   0   'False
+   KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -20,6 +21,23 @@ Begin VB.Form frmMedicineInventory
       TabIndex        =   0
       Top             =   0
       Width           =   13935
+      Begin VB.CommandButton cmdOrder 
+         Caption         =   "Order Medicine"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   15
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   735
+         Left            =   10920
+         TabIndex        =   18
+         Top             =   240
+         Width           =   1335
+      End
       Begin VB.TextBox txtAlertStatus 
          Height          =   735
          Left            =   7920
@@ -115,6 +133,23 @@ Begin VB.Form frmMedicineInventory
          TabIndex        =   5
          Top             =   0
          Width           =   6855
+         Begin VB.CommandButton cmdUpdate 
+            Caption         =   "Update"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   15
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   735
+            Left            =   120
+            TabIndex        =   19
+            Top             =   1080
+            Width           =   1215
+         End
          Begin VB.CommandButton cmdAdd 
             Caption         =   "Add"
             BeginProperty Font 
@@ -128,57 +163,40 @@ Begin VB.Form frmMedicineInventory
             EndProperty
             Height          =   735
             Left            =   120
-            TabIndex        =   18
+            TabIndex        =   17
             Top             =   240
             Width           =   1215
          End
-         Begin VB.CommandButton cmdOrder 
-            Caption         =   "Order Medicine"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   15
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   735
-            Left            =   2760
-            TabIndex        =   17
-            Top             =   240
-            Width           =   1335
-         End
          Begin VB.TextBox txtMedID 
             Height          =   615
-            Left            =   2400
+            Left            =   4080
             Locked          =   -1  'True
             TabIndex        =   12
-            Top             =   1080
+            Top             =   240
             Width           =   1575
          End
          Begin VB.TextBox txtMedName 
             Height          =   615
-            Left            =   2400
+            Left            =   4080
             Locked          =   -1  'True
             TabIndex        =   11
-            Top             =   1800
+            Top             =   960
             Width           =   1575
          End
          Begin VB.TextBox txtQty 
             Height          =   615
-            Left            =   2400
+            Left            =   4080
             Locked          =   -1  'True
             TabIndex        =   10
-            Top             =   2520
+            Top             =   1680
             Width           =   1575
          End
          Begin VB.TextBox txtManufacturer 
             Height          =   615
-            Left            =   2400
+            Left            =   4080
             Locked          =   -1  'True
             TabIndex        =   9
-            Top             =   3240
+            Top             =   2400
             Width           =   1575
          End
          Begin VB.CommandButton cmdDelete 
@@ -193,9 +211,9 @@ Begin VB.Form frmMedicineInventory
                Strikethrough   =   0   'False
             EndProperty
             Height          =   735
-            Left            =   1440
+            Left            =   120
             TabIndex        =   8
-            Top             =   240
+            Top             =   1920
             Width           =   1215
          End
          Begin VB.CommandButton cmdClear 
@@ -210,9 +228,9 @@ Begin VB.Form frmMedicineInventory
                Strikethrough   =   0   'False
             EndProperty
             Height          =   735
-            Left            =   4200
+            Left            =   120
             TabIndex        =   7
-            Top             =   240
+            Top             =   2760
             Width           =   1215
          End
          Begin VB.CommandButton cmdClose 
@@ -227,9 +245,9 @@ Begin VB.Form frmMedicineInventory
                Strikethrough   =   0   'False
             EndProperty
             Height          =   735
-            Left            =   5520
+            Left            =   120
             TabIndex        =   6
-            Top             =   240
+            Top             =   3600
             Width           =   1215
          End
          Begin VB.Label lblMID 
@@ -244,9 +262,9 @@ Begin VB.Form frmMedicineInventory
                Strikethrough   =   0   'False
             EndProperty
             Height          =   615
-            Left            =   120
+            Left            =   1680
             TabIndex        =   16
-            Top             =   1200
+            Top             =   360
             Width           =   1695
          End
          Begin VB.Label lblMedName 
@@ -261,9 +279,9 @@ Begin VB.Form frmMedicineInventory
                Strikethrough   =   0   'False
             EndProperty
             Height          =   615
-            Left            =   120
+            Left            =   1680
             TabIndex        =   15
-            Top             =   1920
+            Top             =   1080
             Width           =   2055
          End
          Begin VB.Label lblQty 
@@ -278,9 +296,9 @@ Begin VB.Form frmMedicineInventory
                Strikethrough   =   0   'False
             EndProperty
             Height          =   615
-            Left            =   120
+            Left            =   1680
             TabIndex        =   14
-            Top             =   2640
+            Top             =   1800
             Width           =   2055
          End
          Begin VB.Label lblManufacturer 
@@ -295,9 +313,9 @@ Begin VB.Form frmMedicineInventory
                Strikethrough   =   0   'False
             EndProperty
             Height          =   615
-            Left            =   120
+            Left            =   1680
             TabIndex        =   13
-            Top             =   3360
+            Top             =   2520
             Width           =   1935
          End
       End
@@ -338,6 +356,7 @@ Private Sub Form_Load()
             App.Path & "\ClinicRecord.mdb"
 
     txtMedID.Locked = True
+    ClearGrid
 End Sub
 
 'Helper Codes
@@ -347,6 +366,23 @@ Private Sub Clear()
     txtManufacturer.Text = ""
     txtQty.Text = ""
     txtAlertStatus.Text = ""
+
+    ClearGrid
+    
+End Sub
+
+Private Sub ClearGrid()
+
+    Set rs = New ADODB.Recordset
+    rs.Fields.Append "MedID", adInteger
+    rs.Fields.Append "MedName", adVarChar, 50
+    rs.Fields.Append "Manufacturer", adVarChar, 50
+    rs.Fields.Append "StockQty", adInteger
+    rs.Fields.Append "AlertStatus", adVarChar, 12
+    
+    rs.Open
+    
+    Set DGMedicine.DataSource = rs
 End Sub
 
 Public Sub LoadData()
@@ -396,6 +432,7 @@ End Function
 Private Sub cmdAdd_Click()
     frmOrderMedicine.txtMedID.Text = GetNextMedID
     frmOrderMedicine.Show
+    Clear
 End Sub
 
 Private Sub cmdOrder_Click()
@@ -409,7 +446,7 @@ Private Sub cmdOrder_Click()
     frmOrderMedicine.txtMedName.Locked = True
     frmOrderMedicine.txtManufacturer.Text = txtManufacturer.Text
     frmOrderMedicine.txtManufacturer.Locked = True
-    
+    Clear
     frmOrderMedicine.Show vbModal
 End Sub
 
@@ -427,6 +464,34 @@ Private Sub cmdDelete_Click()
     End If
 End Sub
 
+Private Sub cmdUpdate_Click()
+    If txtMedID.Text = "" Then
+        MsgBox "Select a record first.", vbExclamation
+        Exit Sub
+    End If
+
+    If txtMedName.Locked = True Then
+        txtMedName.Locked = False
+        txtManufacturer.Locked = False
+        cmdUpdate.Default = True
+        MsgBox "You can now edit the fields. Press Enter/Escape to save/cancel changes. ", vbInformation
+        Exit Sub
+    End If
+
+    cn.Execute "UPDATE medicine_master SET " & _
+               "MedName='" & Replace(txtMedName.Text, "'", "''") & "', " & _
+               "Manufacturer='" & Replace(txtManufacturer.Text, "'", "''") & "' " & _
+               "WHERE MedID=" & txtMedID.Text
+
+    MsgBox "Record updated successfully!", vbInformation
+
+    txtMedName.Locked = True
+    txtManufacturer.Locked = True
+    cmdUpdate.Default = False
+    LoadData
+
+End Sub
+
 Private Sub cmdClear_Click()
     Call Clear
 End Sub
@@ -439,3 +504,22 @@ Private Sub cmdClose_Click()
     Unload Me
 End Sub
 
+Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
+
+    If KeyCode = vbKeyEscape Then
+        
+        If txtMedName.Locked = False Then
+            
+            txtMedName.Text = DGMedicine.Columns(1).Text
+            txtManufacturer.Text = DGMedicine.Columns(2).Text
+            
+            txtMedName.Locked = True
+            txtManufacturer.Locked = True
+            
+            MsgBox "Edit cancelled.", vbInformation
+            
+        End If
+        
+    End If
+
+End Sub

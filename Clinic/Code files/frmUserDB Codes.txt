@@ -92,6 +92,9 @@ Private Sub Clear() 'Clear filled inputs and assign default inputs
     txtComplain.Text = ""
     txtDiagnosis.Text = ""
     txtTreatment.Text = ""
+    txtRID.Text = ""
+    txtPID.Text = ""
+    txtGivenMed = ""
     lblSelectedID.Caption = "Selected Patient: None"
     lblSelectedPatientRID.Caption = "Selected Patient: None"
     SelectID = 0
@@ -329,55 +332,79 @@ End Sub
 Private Sub cmdPEdit_Click()
     frmEditData.OpenPrescription = True
     frmEditData.Show
-    frmUserDB.Hide
 End Sub
 
 Private Sub cmdPConfirm_Click()
-Set rs = New ADODB.Recordset
-    rs.Open "SELECT * FROM patient_master WHERE ID = " & SelectID, cn, adOpenDynamic, adLockOptimistic
-
-    If rs.EOF Then
-        MsgBox "Patient record no longer exists.", vbCritical
+    If cboMedicine.Text = "" Then
+        MsgBox "Please select a medicine.", vbExclamation
         Exit Sub
     End If
 
-    If cboMedicine.Text = "" Then
-        MsgBox "Please select a medicine.", vbExclamation
+    If Trim(txtGivenMed.Text) = "" Or Not IsNumeric(txtGivenMed.Text) Then
+        MsgBox "Please enter a valid quantity to give.", vbExclamation
+        Exit Sub
+    End If
+
+    Dim QtyToDeduct As Long
+    QtyToDeduct = CLng(txtGivenMed.Text)
+
+    If QtyToDeduct <= 0 Then
+        MsgBox "Quantity must be greater than zero.", vbExclamation
+        Exit Sub
+    End If
+
+    Set rs = New ADODB.Recordset
+    rs.Open "SELECT * FROM medicine_master WHERE MedName='" & _
+            Replace(cboMedicine.Text, "'", "''") & "'", _
+            cn, adOpenDynamic, adLockOptimistic
+
+    If rs.EOF Then
+        MsgBox "Medicine not found.", vbCritical
+        rs.Close
+        Exit Sub
+    End If
+
+    If rs!StockQty < QtyToDeduct Then
+        MsgBox "Not enough stock available!" & vbCrLf & _
+               "Available: " & rs!StockQty, vbCritical
+        rs.Close
+        Exit Sub
+    End If
+
+    If MsgBox("Are you sure you want to save this patient's prescription?", _
+              vbYesNo + vbQuestion) = vbNo Then
+        rs.Close
+        Exit Sub
+    End If
+
+    rs!StockQty = rs!StockQty - QtyToDeduct
+    rs.Update
+    rs.Close
+
+    Set rs = New ADODB.Recordset
+    rs.Open "SELECT * FROM patient_master WHERE ID = " & _
+            SelectID, cn, adOpenDynamic, adLockOptimistic
+
+    If rs.EOF Then
+        MsgBox "Patient record no longer exists.", vbCritical
+        rs.Close
         Exit Sub
     End If
 
     rs!Medicine = cboMedicine.Text
     rs!Treatment = txtTreatment.Text
     rs!Diagnosis = txtDiagnosis.Text
-
-    If MsgBox("Are you sure you want to save this patient's prescription?", vbYesNo + vbQuestion) = vbNo Then
-        rs.CancelUpdate
-        Exit Sub
-    End If
-
     rs.Update
-
-
-    Set rs = New ADODB.Recordset
-    rs.Open "SELECT * FROM medicine_master WHERE MedName='" & Replace(cboMedicine.Text, "'", "''") & "'", cn, adOpenDynamic, adLockOptimistic
-
-    If Not rs.EOF Then
-        If rs!StockQty <= 0 Then
-            MsgBox "Medicine is OUT OF STOCK!", vbCritical
-            rs.Close
-            Set rs = Nothing
-            Exit Sub
-        End If
-        rs!StockQty = rs!StockQty - 1
-        rs.Update
-    End If
 
     rs.Close
     Set rs = Nothing
 
+    MsgBox "Prescription saved and stock updated successfully!", vbInformation
+
     ShowRecord
     Clear
     ShowFrame fraPrescription
+
 End Sub
 
 'Archive Codes
@@ -486,6 +513,7 @@ Private Sub cmdRConfirm_Click()
     Set rs = Nothing
 
     MsgBox "Record archived and deleted successfully!"
+    Clear
 End Sub
 
 Private Sub cmdLoadArchive_Click()
@@ -536,8 +564,6 @@ Private Sub cmdEdit_Click()
     frmEditData.OpenPrescription = False
     frmEditData.InitializeForm
     frmEditData.Show
-
-    Unload Me
 
     rs.Close
     Set rs = Nothing
@@ -590,7 +616,8 @@ Private Sub FilterInput(KeyAscii As Integer, _
     If KeyAscii = vbKeyBack Then Exit Sub
 
     If (KeyAscii >= 65 And KeyAscii <= 90) Or _
-       (KeyAscii >= 97 And KeyAscii <= 122) Then Exit Sub
+       (KeyAscii >= 97 And KeyAscii <= 122) Or _
+       (KeyAscii = 164 Or KeyAscii = 165) Then Exit Sub
        
     If AllowNumbers Then
         If KeyAscii >= 48 And KeyAscii <= 57 Then Exit Sub
@@ -651,7 +678,7 @@ End Sub
 
 Private Sub txtName_Validate(Cancel As Boolean)
     If txtName.Text = "" Then Exit Sub
-    If txtName.Text Like "*[!A-Za-z .'-]*" Then
+    If txtName.Text Like "*[!A-Za-zñÑ .'-]*" Then
         MsgBox "Invalid characters in Name.", vbExclamation
         Cancel = True
     End If
@@ -717,4 +744,11 @@ Private Sub txtRID_Validate(Cancel As Boolean)
         MsgBox "Numbers only.", vbExclamation
         Cancel = True
     End If
+End Sub
+
+Private Sub txtGivenMed_KeyPress(KeyAscii As Integer)
+    If Not (KeyAscii >= 48 And KeyAscii <= 57) And KeyAscii <> 8 Then
+        KeyAscii = 0
+    End If
+
 End Sub

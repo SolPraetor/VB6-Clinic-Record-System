@@ -148,7 +148,9 @@ Private Sub cmdLogin_Click()
         If StrComp(loginado.Recordset!UserName, txtUser.Text, vbBinaryCompare) = 0 _
             And StrComp(loginado.Recordset!Password, txtPass.Text, vbBinaryCompare) = 0 Then
                 If loginado.Recordset!ID = 1 Then
+                    Load frmUserDB
                     frmUserDB.Show
+                    frmSplash.Show
                 End If
             Unload Me
         Else
