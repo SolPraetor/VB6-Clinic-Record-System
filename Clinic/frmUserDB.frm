@@ -18,20 +18,20 @@ Begin VB.Form frmUserDB
    Begin VB.Frame fraMain 
       Height          =   7335
       Left            =   2520
-      TabIndex        =   15
+      TabIndex        =   14
       Top             =   0
       Width           =   13335
       Begin VB.Frame fraPrescription 
          Height          =   7335
          Left            =   0
-         TabIndex        =   17
+         TabIndex        =   16
          Top             =   0
          Width           =   13335
          Begin VB.TextBox txtGivenMed 
             Height          =   615
             Left            =   3120
             MaxLength       =   1
-            TabIndex        =   64
+            TabIndex        =   63
             Top             =   1800
             Width           =   1695
          End
@@ -48,7 +48,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   735
             Left            =   4920
-            TabIndex        =   61
+            TabIndex        =   60
             Top             =   1080
             Width           =   1215
          End
@@ -56,7 +56,7 @@ Begin VB.Form frmUserDB
             Height          =   315
             Left            =   3120
             Style           =   2  'Dropdown List
-            TabIndex        =   57
+            TabIndex        =   56
             Top             =   1320
             Width           =   1695
          End
@@ -73,7 +73,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   735
             Left            =   9600
-            TabIndex        =   56
+            TabIndex        =   55
             Top             =   240
             Width           =   1575
          End
@@ -90,7 +90,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   735
             Left            =   7800
-            TabIndex        =   55
+            TabIndex        =   54
             Top             =   240
             Width           =   1695
          End
@@ -107,7 +107,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   735
             Left            =   6360
-            TabIndex        =   49
+            TabIndex        =   48
             Top             =   240
             Width           =   1335
          End
@@ -125,7 +125,7 @@ Begin VB.Form frmUserDB
             Left            =   6720
             MultiLine       =   -1  'True
             ScrollBars      =   2  'Vertical
-            TabIndex        =   46
+            TabIndex        =   45
             Top             =   3000
             Width           =   6255
          End
@@ -143,7 +143,7 @@ Begin VB.Form frmUserDB
             Left            =   360
             MultiLine       =   -1  'True
             ScrollBars      =   2  'Vertical
-            TabIndex        =   44
+            TabIndex        =   43
             Top             =   3000
             Width           =   6255
          End
@@ -160,7 +160,7 @@ Begin VB.Form frmUserDB
             Height          =   735
             Left            =   4080
             MaxLength       =   4
-            TabIndex        =   42
+            TabIndex        =   41
             Top             =   240
             Width           =   2175
          End
@@ -177,7 +177,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   615
             Left            =   360
-            TabIndex        =   65
+            TabIndex        =   64
             Top             =   1200
             Width           =   2895
          End
@@ -194,7 +194,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   615
             Left            =   360
-            TabIndex        =   48
+            TabIndex        =   47
             Top             =   1920
             Width           =   2535
          End
@@ -211,7 +211,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   615
             Left            =   6720
-            TabIndex        =   47
+            TabIndex        =   46
             Top             =   2520
             Width           =   1815
          End
@@ -228,7 +228,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   615
             Left            =   360
-            TabIndex        =   45
+            TabIndex        =   44
             Top             =   2520
             Width           =   1575
          End
@@ -245,7 +245,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   615
             Left            =   3240
-            TabIndex        =   43
+            TabIndex        =   42
             Top             =   360
             Width           =   1215
          End
@@ -262,7 +262,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   1215
             Left            =   6360
-            TabIndex        =   50
+            TabIndex        =   49
             Top             =   1200
             Width           =   6615
          End
@@ -279,22 +279,368 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   735
             Left            =   120
-            TabIndex        =   41
+            TabIndex        =   40
             Top             =   360
             Width           =   3015
+         End
+      End
+      Begin VB.Frame fraPatientLog 
+         Height          =   7335
+         Left            =   0
+         TabIndex        =   18
+         Top             =   0
+         Width           =   13335
+         Begin VB.CommandButton cmdRefresh 
+            Caption         =   "Refresh"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   15
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   735
+            Left            =   6600
+            TabIndex        =   36
+            Top             =   240
+            Width           =   1455
+         End
+         Begin VB.CommandButton cmdLoad 
+            Caption         =   "Load Data"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   15
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   735
+            Left            =   3360
+            TabIndex        =   35
+            Top             =   240
+            Width           =   1575
+         End
+         Begin VB.CommandButton cmdEdit 
+            Caption         =   "Edit Data"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   15
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   735
+            Left            =   5040
+            TabIndex        =   34
+            Top             =   240
+            Width           =   1455
+         End
+         Begin MSDataGridLib.DataGrid DGData 
+            Height          =   2535
+            Left            =   120
+            TabIndex        =   37
+            Top             =   1200
+            Width           =   12975
+            _ExtentX        =   22886
+            _ExtentY        =   4471
+            _Version        =   393216
+            HeadLines       =   1
+            RowHeight       =   15
+            BeginProperty HeadFont {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ColumnCount     =   2
+            BeginProperty Column00 
+               DataField       =   ""
+               Caption         =   ""
+               BeginProperty DataFormat {6D835690-900B-11D0-9484-00A0C91110ED} 
+                  Type            =   0
+                  Format          =   ""
+                  HaveTrueFalseNull=   0
+                  FirstDayOfWeek  =   0
+                  FirstWeekOfYear =   0
+                  LCID            =   1033
+                  SubFormatType   =   0
+               EndProperty
+            EndProperty
+            BeginProperty Column01 
+               DataField       =   ""
+               Caption         =   ""
+               BeginProperty DataFormat {6D835690-900B-11D0-9484-00A0C91110ED} 
+                  Type            =   0
+                  Format          =   ""
+                  HaveTrueFalseNull=   0
+                  FirstDayOfWeek  =   0
+                  FirstWeekOfYear =   0
+                  LCID            =   1033
+                  SubFormatType   =   0
+               EndProperty
+            EndProperty
+            SplitCount      =   1
+            BeginProperty Split0 
+               BeginProperty Column00 
+               EndProperty
+               BeginProperty Column01 
+               EndProperty
+            EndProperty
+         End
+         Begin VB.Label lblLogs 
+            Caption         =   "Patient Data Logs"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   18
+               Charset         =   0
+               Weight          =   700
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   735
+            Left            =   120
+            TabIndex        =   38
+            Top             =   360
+            Width           =   3975
+         End
+      End
+      Begin VB.Frame fraRemovePatient 
+         Height          =   7335
+         Left            =   0
+         TabIndex        =   17
+         Top             =   0
+         Width           =   13335
+         Begin VB.CommandButton cmdLoadArchive 
+            Caption         =   "Load Archive"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   15
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   735
+            Left            =   3840
+            TabIndex        =   53
+            Top             =   1920
+            Width           =   1575
+         End
+         Begin VB.CommandButton cmdRefreshArchive 
+            Caption         =   "Refresh"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   15
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   735
+            Left            =   5520
+            TabIndex        =   52
+            Top             =   1920
+            Width           =   1455
+         End
+         Begin VB.TextBox txtRID 
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   15
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   735
+            Left            =   1920
+            MaxLength       =   4
+            TabIndex        =   32
+            Top             =   840
+            Width           =   2175
+         End
+         Begin VB.CommandButton cmdRConfirm 
+            Caption         =   "Confirm"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   15
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   735
+            Left            =   4200
+            TabIndex        =   31
+            Top             =   840
+            Width           =   1335
+         End
+         Begin MSDataGridLib.DataGrid DGArchive 
+            Height          =   4335
+            Left            =   120
+            TabIndex        =   50
+            Top             =   2760
+            Width           =   12975
+            _ExtentX        =   22886
+            _ExtentY        =   7646
+            _Version        =   393216
+            HeadLines       =   1
+            RowHeight       =   15
+            BeginProperty HeadFont {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ColumnCount     =   2
+            BeginProperty Column00 
+               DataField       =   ""
+               Caption         =   ""
+               BeginProperty DataFormat {6D835690-900B-11D0-9484-00A0C91110ED} 
+                  Type            =   0
+                  Format          =   ""
+                  HaveTrueFalseNull=   0
+                  FirstDayOfWeek  =   0
+                  FirstWeekOfYear =   0
+                  LCID            =   1033
+                  SubFormatType   =   0
+               EndProperty
+            EndProperty
+            BeginProperty Column01 
+               DataField       =   ""
+               Caption         =   ""
+               BeginProperty DataFormat {6D835690-900B-11D0-9484-00A0C91110ED} 
+                  Type            =   0
+                  Format          =   ""
+                  HaveTrueFalseNull=   0
+                  FirstDayOfWeek  =   0
+                  FirstWeekOfYear =   0
+                  LCID            =   1033
+                  SubFormatType   =   0
+               EndProperty
+            EndProperty
+            SplitCount      =   1
+            BeginProperty Split0 
+               BeginProperty Column00 
+               EndProperty
+               BeginProperty Column01 
+               EndProperty
+            EndProperty
+         End
+         Begin VB.Label lblSelectedPatientRID 
+            Caption         =   "Selected Patient: None"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   15
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   855
+            Left            =   5760
+            TabIndex        =   61
+            Top             =   960
+            Width           =   7095
+         End
+         Begin VB.Label Label1 
+            Caption         =   "Patient Archive Logs"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   18
+               Charset         =   0
+               Weight          =   700
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   735
+            Left            =   120
+            TabIndex        =   51
+            Top             =   1920
+            Width           =   3975
+         End
+         Begin VB.Label lblRID 
+            Caption         =   "Select ID"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   18
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   615
+            Left            =   120
+            TabIndex        =   33
+            Top             =   1080
+            Width           =   1575
+         End
+         Begin VB.Label Label2 
+            Caption         =   "Archive Patient Data"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   18
+               Charset         =   0
+               Weight          =   700
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   735
+            Left            =   120
+            TabIndex        =   39
+            Top             =   360
+            Width           =   3975
          End
       End
       Begin VB.Frame fraAddPatient 
          Height          =   7335
          Left            =   0
-         TabIndex        =   16
+         TabIndex        =   15
          Top             =   0
          Width           =   13335
          Begin VB.ComboBox cboSex 
             Height          =   315
             Left            =   1920
             Style           =   2  'Dropdown List
-            TabIndex        =   60
+            TabIndex        =   59
             Top             =   4680
             Width           =   2175
          End
@@ -311,21 +657,22 @@ Begin VB.Form frmUserDB
             Height          =   735
             Left            =   1920
             Locked          =   -1  'True
-            TabIndex        =   59
-            Top             =   2760
+            TabIndex        =   58
+            Top             =   3720
             Width           =   2175
          End
          Begin MSComCtl2.DTPicker dtpDOB 
             Height          =   375
             Left            =   1920
-            TabIndex        =   58
-            Top             =   3840
+            TabIndex        =   57
+            TabStop         =   0   'False
+            Top             =   3000
             Width           =   2175
             _ExtentX        =   3836
             _ExtentY        =   661
             _Version        =   393216
             CustomFormat    =   """MM/dd/yyyy"""
-            Format          =   142606339
+            Format          =   142540803
             CurrentDate     =   46073
          End
          Begin VB.CommandButton cmdAddConfirm 
@@ -342,23 +689,6 @@ Begin VB.Form frmUserDB
             Height          =   735
             Left            =   3720
             TabIndex        =   8
-            Top             =   240
-            Width           =   1335
-         End
-         Begin VB.CommandButton cmdReturn 
-            Caption         =   "Return"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   15
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   735
-            Left            =   5160
-            TabIndex        =   9
             Top             =   240
             Width           =   1335
          End
@@ -457,8 +787,10 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   360
             Left            =   1920
+            Locked          =   -1  'True
             TabIndex        =   2
-            Top             =   3840
+            Text            =   "Don't Remove, Put under Date Dropdown"
+            Top             =   3000
             Width           =   2175
          End
          Begin VB.TextBox txtName 
@@ -490,7 +822,7 @@ Begin VB.Form frmUserDB
             Height          =   735
             Left            =   1920
             Locked          =   -1  'True
-            TabIndex        =   22
+            TabIndex        =   21
             Top             =   1080
             Width           =   2175
          End
@@ -507,7 +839,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   615
             Left            =   4200
-            TabIndex        =   31
+            TabIndex        =   30
             Top             =   2040
             Width           =   1575
          End
@@ -524,7 +856,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   615
             Left            =   4200
-            TabIndex        =   30
+            TabIndex        =   29
             Top             =   2880
             Width           =   3375
          End
@@ -541,7 +873,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   615
             Left            =   4200
-            TabIndex        =   29
+            TabIndex        =   28
             Top             =   1200
             Width           =   1575
          End
@@ -558,7 +890,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   615
             Left            =   240
-            TabIndex        =   28
+            TabIndex        =   27
             Top             =   6240
             Width           =   1575
          End
@@ -575,7 +907,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   615
             Left            =   240
-            TabIndex        =   27
+            TabIndex        =   26
             Top             =   4560
             Width           =   1215
          End
@@ -592,7 +924,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   615
             Left            =   240
-            TabIndex        =   26
+            TabIndex        =   25
             Top             =   5400
             Width           =   1455
          End
@@ -609,8 +941,8 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   615
             Left            =   240
-            TabIndex        =   25
-            Top             =   3720
+            TabIndex        =   24
+            Top             =   2880
             Width           =   1215
          End
          Begin VB.Label lblAge 
@@ -626,8 +958,8 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   615
             Left            =   240
-            TabIndex        =   24
-            Top             =   2880
+            TabIndex        =   23
+            Top             =   3840
             Width           =   1215
          End
          Begin VB.Label lblName 
@@ -643,7 +975,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   615
             Left            =   240
-            TabIndex        =   23
+            TabIndex        =   22
             Top             =   2040
             Width           =   1215
          End
@@ -660,7 +992,7 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   615
             Left            =   240
-            TabIndex        =   21
+            TabIndex        =   20
             Top             =   1200
             Width           =   1215
          End
@@ -677,355 +1009,9 @@ Begin VB.Form frmUserDB
             EndProperty
             Height          =   735
             Left            =   120
-            TabIndex        =   20
+            TabIndex        =   19
             Top             =   360
             Width           =   3375
-         End
-      End
-      Begin VB.Frame fraPatientLog 
-         Height          =   7335
-         Left            =   0
-         TabIndex        =   19
-         Top             =   0
-         Width           =   13335
-         Begin VB.CommandButton cmdRefresh 
-            Caption         =   "Refresh"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   15
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   735
-            Left            =   6600
-            TabIndex        =   37
-            Top             =   240
-            Width           =   1455
-         End
-         Begin VB.CommandButton cmdLoad 
-            Caption         =   "Load Data"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   15
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   735
-            Left            =   3360
-            TabIndex        =   36
-            Top             =   240
-            Width           =   1575
-         End
-         Begin VB.CommandButton cmdEdit 
-            Caption         =   "Edit Data"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   15
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   735
-            Left            =   5040
-            TabIndex        =   35
-            Top             =   240
-            Width           =   1455
-         End
-         Begin MSDataGridLib.DataGrid DGData 
-            Height          =   2535
-            Left            =   120
-            TabIndex        =   38
-            Top             =   1200
-            Width           =   12975
-            _ExtentX        =   22886
-            _ExtentY        =   4471
-            _Version        =   393216
-            HeadLines       =   1
-            RowHeight       =   15
-            BeginProperty HeadFont {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ColumnCount     =   2
-            BeginProperty Column00 
-               DataField       =   ""
-               Caption         =   ""
-               BeginProperty DataFormat {6D835690-900B-11D0-9484-00A0C91110ED} 
-                  Type            =   0
-                  Format          =   ""
-                  HaveTrueFalseNull=   0
-                  FirstDayOfWeek  =   0
-                  FirstWeekOfYear =   0
-                  LCID            =   1033
-                  SubFormatType   =   0
-               EndProperty
-            EndProperty
-            BeginProperty Column01 
-               DataField       =   ""
-               Caption         =   ""
-               BeginProperty DataFormat {6D835690-900B-11D0-9484-00A0C91110ED} 
-                  Type            =   0
-                  Format          =   ""
-                  HaveTrueFalseNull=   0
-                  FirstDayOfWeek  =   0
-                  FirstWeekOfYear =   0
-                  LCID            =   1033
-                  SubFormatType   =   0
-               EndProperty
-            EndProperty
-            SplitCount      =   1
-            BeginProperty Split0 
-               BeginProperty Column00 
-               EndProperty
-               BeginProperty Column01 
-               EndProperty
-            EndProperty
-         End
-         Begin VB.Label lblLogs 
-            Caption         =   "Patient Data Logs"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   18
-               Charset         =   0
-               Weight          =   700
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   735
-            Left            =   120
-            TabIndex        =   39
-            Top             =   360
-            Width           =   3975
-         End
-      End
-      Begin VB.Frame fraRemovePatient 
-         Height          =   7335
-         Left            =   0
-         TabIndex        =   18
-         Top             =   0
-         Width           =   13335
-         Begin VB.CommandButton cmdLoadArchive 
-            Caption         =   "Load Archive"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   15
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   735
-            Left            =   3840
-            TabIndex        =   54
-            Top             =   1920
-            Width           =   1575
-         End
-         Begin VB.CommandButton cmdRefreshArchive 
-            Caption         =   "Refresh"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   15
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   735
-            Left            =   5520
-            TabIndex        =   53
-            Top             =   1920
-            Width           =   1455
-         End
-         Begin VB.TextBox txtRID 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   15
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   735
-            Left            =   1920
-            MaxLength       =   4
-            TabIndex        =   33
-            Top             =   840
-            Width           =   2175
-         End
-         Begin VB.CommandButton cmdRConfirm 
-            Caption         =   "Confirm"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   15
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   735
-            Left            =   4200
-            TabIndex        =   32
-            Top             =   840
-            Width           =   1335
-         End
-         Begin MSDataGridLib.DataGrid DGArchive 
-            Height          =   4335
-            Left            =   120
-            TabIndex        =   51
-            Top             =   2760
-            Width           =   12975
-            _ExtentX        =   22886
-            _ExtentY        =   7646
-            _Version        =   393216
-            HeadLines       =   1
-            RowHeight       =   15
-            BeginProperty HeadFont {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ColumnCount     =   2
-            BeginProperty Column00 
-               DataField       =   ""
-               Caption         =   ""
-               BeginProperty DataFormat {6D835690-900B-11D0-9484-00A0C91110ED} 
-                  Type            =   0
-                  Format          =   ""
-                  HaveTrueFalseNull=   0
-                  FirstDayOfWeek  =   0
-                  FirstWeekOfYear =   0
-                  LCID            =   1033
-                  SubFormatType   =   0
-               EndProperty
-            EndProperty
-            BeginProperty Column01 
-               DataField       =   ""
-               Caption         =   ""
-               BeginProperty DataFormat {6D835690-900B-11D0-9484-00A0C91110ED} 
-                  Type            =   0
-                  Format          =   ""
-                  HaveTrueFalseNull=   0
-                  FirstDayOfWeek  =   0
-                  FirstWeekOfYear =   0
-                  LCID            =   1033
-                  SubFormatType   =   0
-               EndProperty
-            EndProperty
-            SplitCount      =   1
-            BeginProperty Split0 
-               BeginProperty Column00 
-               EndProperty
-               BeginProperty Column01 
-               EndProperty
-            EndProperty
-         End
-         Begin VB.Label lblSelectedPatientRID 
-            Caption         =   "Selected Patient: None"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   15
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   855
-            Left            =   5760
-            TabIndex        =   62
-            Top             =   960
-            Width           =   7095
-         End
-         Begin VB.Label Label1 
-            Caption         =   "Patient Archive Logs"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   18
-               Charset         =   0
-               Weight          =   700
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   735
-            Left            =   120
-            TabIndex        =   52
-            Top             =   1920
-            Width           =   3975
-         End
-         Begin VB.Label lblRID 
-            Caption         =   "Select ID"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   18
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   615
-            Left            =   120
-            TabIndex        =   34
-            Top             =   1080
-            Width           =   1575
-         End
-         Begin VB.Label Label2 
-            Caption         =   "Archive Patient Data"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   18
-               Charset         =   0
-               Weight          =   700
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   735
-            Left            =   120
-            TabIndex        =   40
-            Top             =   360
-            Width           =   3975
          End
       End
    End
@@ -1048,7 +1034,7 @@ Begin VB.Form frmUserDB
          EndProperty
          Height          =   735
          Left            =   480
-         TabIndex        =   63
+         TabIndex        =   62
          Top             =   5760
          Width           =   1575
       End
@@ -1065,7 +1051,7 @@ Begin VB.Form frmUserDB
          EndProperty
          Height          =   735
          Left            =   480
-         TabIndex        =   13
+         TabIndex        =   12
          Top             =   4080
          Width           =   1575
       End
@@ -1082,7 +1068,7 @@ Begin VB.Form frmUserDB
          EndProperty
          Height          =   735
          Left            =   480
-         TabIndex        =   10
+         TabIndex        =   9
          Top             =   2400
          Width           =   1575
       End
@@ -1099,7 +1085,7 @@ Begin VB.Form frmUserDB
          EndProperty
          Height          =   735
          Left            =   480
-         TabIndex        =   11
+         TabIndex        =   10
          Top             =   3240
          Width           =   1575
       End
@@ -1116,7 +1102,7 @@ Begin VB.Form frmUserDB
          EndProperty
          Height          =   735
          Left            =   480
-         TabIndex        =   12
+         TabIndex        =   11
          Top             =   4920
          Width           =   1575
       End
@@ -1124,7 +1110,7 @@ Begin VB.Form frmUserDB
          Caption         =   "Logout"
          Height          =   735
          Left            =   480
-         TabIndex        =   14
+         TabIndex        =   13
          Top             =   1440
          Width           =   1575
       End
@@ -1223,12 +1209,19 @@ Private Sub ShowRecord() 'Check and display records
     txtDiagnosis.Text = IIf(IsNull(rs!Diagnosis), "", rs!Diagnosis)
 End Sub
 
-Private Sub ShowFrame(fra As Frame) 'Hide Frames
+Private Sub ShowFrame(fra As Frame)
+
+    If fra.Visible Then
+        fra.Visible = False
+        Exit Sub
+    End If
+    
     fraAddPatient.Visible = False
     fraRemovePatient.Visible = False
     fraPatientLog.Visible = False
     fraPrescription.Visible = False
     fra.Visible = True
+
 End Sub
 
 Private Sub Clear() 'Clear filled inputs and assign default inputs
@@ -1299,6 +1292,29 @@ Private Sub CalculateAge()
 End Sub
 
 'Function Codes
+Private Function Cleaner(ByVal txt As String) As String 'Get rid of Multi Spacing
+    Dim result As String
+    Dim i As Long
+    Dim checker As String
+    Dim lastSpace As Boolean
+    
+    For i = 1 To Len(txt)
+        checker = Mid$(txt, i, 1)
+
+        If checker = " " Then
+            If Not lastSpace Then
+                result = result & " "
+                lastSpace = True
+            End If
+        Else
+            result = result & checker
+            lastSpace = False
+        End If
+    Next i
+    
+    Cleaner = result
+End Function
+
 Private Function GetNextID() As Long 'Display next unused IDs
     Set rs = New ADODB.Recordset
 
@@ -1373,6 +1389,13 @@ Private Sub cmdAddConfirm_Click()
     Set rs = New ADODB.Recordset
     rs.Open "patient_master", cn, adOpenDynamic, adLockOptimistic
 
+    'Cleaner
+    txtName.Text = Cleaner(txtName.Text)
+    txtAddress.Text = Cleaner(txtAddress.Text)
+    txtSymptom.Text = Cleaner(txtSymptom.Text)
+    txtCondition.Text = Cleaner(txtCondition.Text)
+    txtComplain.Text = Cleaner(txtComplain.Text)
+    
     If Trim(txtName.Text) = "" Then
         MsgBox "Please enter the Patient's Name.", vbExclamation
         Exit Sub
@@ -1396,15 +1419,15 @@ Private Sub cmdAddConfirm_Click()
     End If
     
     rs.AddNew
-    rs!Name = txtName.Text
+    rs!Name = Trim(txtName.Text)
     If IsNumeric(txtAge.Text) And Val(txtAge.Text) >= 0 Then rs!Age = CLng(txtAge.Text)
     rs!DOB = dtpDOB.Value
-    rs!Address = txtAddress.Text
+    rs!Address = Trim(txtAddress.Text)
     rs!Sex = cboSex.Text
-    rs!Symptom = txtSymptom.Text
-    rs!Condition = txtCondition.Text
-    rs!Contact = txtContact.Text
-    rs!Complain = txtComplain.Text
+    rs!Symptom = Trim(txtSymptom.Text)
+    rs!Condition = Trim(txtCondition.Text)
+    rs!Contact = Trim(txtContact.Text)
+    rs!Complain = Trim(txtComplain.Text)
 
     rs.Update
     MsgBox "Patient record saved successfully!"
@@ -1415,10 +1438,6 @@ Private Sub cmdAddConfirm_Click()
     ShowFrame fraAddPatient
 End Sub
 
-Private Sub cmdReturn_Click()
-    fraAddPatient.Visible = False
-End Sub
-
 'Prescription Codes
 Private Sub cmdPrescription_Click()
     ShowFrame fraPrescription
@@ -1426,7 +1445,7 @@ Private Sub cmdPrescription_Click()
 End Sub
 
 Private Sub cmdInv_Click()
-    frmMedicineInventory.Show
+    frmMedicineInventory.Show vbModal
 End Sub
 
 Private Sub cmdMedRefresh_Click()
@@ -1482,10 +1501,14 @@ End Sub
 
 Private Sub cmdPEdit_Click()
     frmEditData.OpenPrescription = True
-    frmEditData.Show
+    frmEditData.Show vbModal
 End Sub
 
 Private Sub cmdPConfirm_Click()
+    'Cleaner
+    txtTreatment.Text = Cleaner(txtTreatment.Text)
+    txtDiagnosis.Text = Cleaner(txtDiagnosis.Text)
+    
     If cboMedicine.Text = "" Then
         MsgBox "Please select a medicine.", vbExclamation
         Exit Sub
@@ -1693,7 +1716,7 @@ End Sub
 
 'Log Codes
 Private Sub cmdReport_Click()
-    frmReport.Show
+    frmReport.Show vbModal
 End Sub
 
 Private Sub cmdPatientLog_Click()
@@ -1714,7 +1737,7 @@ Private Sub cmdEdit_Click()
 
     frmEditData.OpenPrescription = False
     frmEditData.InitializeForm
-    frmEditData.Show
+    frmEditData.Show vbModal
 
     rs.Close
     Set rs = Nothing
@@ -1823,10 +1846,6 @@ Private Sub txtTreatment_KeyPress(KeyAscii As Integer)
     FilterInput KeyAscii, True, " ,.-#()"
 End Sub
 
-Private Sub txtName_LostFocus()
-    txtName.Text = CapitalizeName(txtName.Text)
-End Sub
-
 Private Sub txtName_Validate(Cancel As Boolean)
     If txtName.Text = "" Then Exit Sub
     If txtName.Text Like "*[!A-Za-zñÑ .'-]*" Then
@@ -1902,4 +1921,17 @@ Private Sub txtGivenMed_KeyPress(KeyAscii As Integer)
         KeyAscii = 0
     End If
 
+End Sub
+
+Private Sub DTPicker1_KeyPress(KeyAscii As Integer)
+    KeyAscii = 0
+    
+End Sub
+
+Private Sub dtpDOB_GotFocus()
+    txtDOB.SetFocus
+End Sub
+
+Private Sub txtName_LostFocus()
+    txtName.Text = CapitalizeName(txtName.Text)
 End Sub

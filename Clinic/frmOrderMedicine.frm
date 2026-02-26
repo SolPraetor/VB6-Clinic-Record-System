@@ -165,6 +165,30 @@ Private Sub Form_Load()
             App.Path & "\ClinicRecord.mdb"
 End Sub
 
+'Function Codes
+Private Function Cleaner(ByVal txt As String) As String 'Get rid of Multi Spacing
+    Dim result As String
+    Dim i As Long
+    Dim checker As String
+    Dim lastSpace As Boolean
+    
+    For i = 1 To Len(txt)
+        checker = Mid$(txt, i, 1)
+
+        If checker = " " Then
+            If Not lastSpace Then
+                result = result & " "
+                lastSpace = True
+            End If
+        Else
+            result = result & checker
+            lastSpace = False
+        End If
+    Next i
+    
+    Cleaner = result
+End Function
+
 'Order Codes
 Private Sub cmdOrder_Click()
     Dim OrderQty As Long
@@ -174,6 +198,9 @@ Private Sub cmdOrder_Click()
     Dim Manufacturer As String
     Const MaxOrder As Long = 50
     Const MaxStock As Long = 200
+
+    txtMedName.Text = Cleaner(txtMedName.Text)
+    txtManufacturer.Text = Cleaner(txtManufacturer.Text)
 
     If txtQty.Text = "" Or Not IsNumeric(txtQty.Text) Then
         MsgBox "Enter a valid numeric order quantity.", vbExclamation
