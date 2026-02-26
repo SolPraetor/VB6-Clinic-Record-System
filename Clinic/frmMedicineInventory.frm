@@ -411,6 +411,29 @@ Private Sub DGMedicine_RowColChange(LastRow As Variant, ByVal LastCol As Integer
 End Sub
 
 'Function Codes
+Private Function Cleaner(ByVal txt As String) As String 'Get rid of Multi Spacing
+    Dim result As String
+    Dim i As Long
+    Dim checker As String
+    Dim lastSpace As Boolean
+    
+    For i = 1 To Len(txt)
+        checker = Mid$(txt, i, 1)
+
+        If checker = " " Then
+            If Not lastSpace Then
+                result = result & " "
+                lastSpace = True
+            End If
+        Else
+            result = result & checker
+            lastSpace = False
+        End If
+    Next i
+    
+    Cleaner = result
+End Function
+
 Private Function GetNextMedID() As Long
     Set rs = New ADODB.Recordset
 
@@ -431,7 +454,7 @@ End Function
 'Navigation Codes
 Private Sub cmdAdd_Click()
     frmOrderMedicine.txtMedID.Text = GetNextMedID
-    frmOrderMedicine.Show
+    frmOrderMedicine.Show vbModal
     Clear
 End Sub
 
@@ -465,6 +488,9 @@ Private Sub cmdDelete_Click()
 End Sub
 
 Private Sub cmdUpdate_Click()
+    txtMedName.Text = Trim(Cleaner(txtMedName.Text))
+    txtManufacturer.Text = Trim(Cleaner(txtManufacturer.Text))
+    
     If txtMedID.Text = "" Then
         MsgBox "Select a record first.", vbExclamation
         Exit Sub
@@ -474,6 +500,14 @@ Private Sub cmdUpdate_Click()
         txtMedName.Locked = False
         txtManufacturer.Locked = False
         cmdUpdate.Default = True
+        DGMedicine.Enabled = False
+        cmdLoad.Enabled = False
+        cmdDelete.Enabled = False
+        cmdClear.Enabled = False
+        cmdClose.Enabled = False
+        cmdAdd.Enabled = False
+        cmdOrder.Enabled = False
+        
         MsgBox "You can now edit the fields. Press Enter/Escape to save/cancel changes. ", vbInformation
         Exit Sub
     End If
@@ -488,6 +522,13 @@ Private Sub cmdUpdate_Click()
     txtMedName.Locked = True
     txtManufacturer.Locked = True
     cmdUpdate.Default = False
+    DGMedicine.Enabled = True
+    cmdLoad.Enabled = True
+    cmdDelete.Enabled = True
+    cmdClear.Enabled = True
+    cmdClose.Enabled = True
+    cmdAdd.Enabled = True
+    cmdOrder.Enabled = True
     LoadData
 
 End Sub
@@ -515,6 +556,13 @@ Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
             
             txtMedName.Locked = True
             txtManufacturer.Locked = True
+            DGMedicine.Enabled = True
+        cmdLoad.Enabled = True
+        cmdDelete.Enabled = True
+        cmdClear.Enabled = True
+        cmdClose.Enabled = True
+        cmdAdd.Enabled = True
+        cmdOrder.Enabled = True
             
             MsgBox "Edit cancelled.", vbInformation
             
