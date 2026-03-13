@@ -1,0 +1,298 @@
+'General
+Option Explicit
+
+Dim cn As ADODB.Connection
+Dim rs As ADODB.Recordset
+
+'Main Logic
+Private Sub Form_Load()
+
+    Set cn = New ADODB.Connection
+    cn.Open "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & _
+            App.Path & "\ClinicRecord.mdb"
+
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+
+    If Not rs Is Nothing Then
+        If rs.State = adStateOpen Then rs.Close
+    End If
+
+    If Not cn Is Nothing Then
+        If cn.State = adStateOpen Then cn.Close
+    End If
+
+End Sub
+
+'Record Load Codes
+Private Sub cmdLog_Click()
+    If Not rs Is Nothing Then
+        If rs.State = adStateOpen Then rs.Close
+    End If
+
+    Set rs = New ADODB.Recordset
+    rs.CursorLocation = adUseClient
+
+
+    rs.Open "SELECT ID, Name, Complain, Diagnosis, Treatment, Medicine " & _
+                  "FROM patient_master ORDER BY ID ASC", _
+                  cn, adOpenStatic, adLockReadOnly
+
+    If rs.EOF Then
+        MsgBox "No records found.", vbInformation
+        Exit Sub
+    End If
+
+    Set DGReport.DataSource = rs
+    MsgBox "Daily Consultation Log Loaded.", vbInformation
+    
+End Sub
+
+Private Sub cmdInventory_Click()
+    If Not rs Is Nothing Then
+        If rs.State = adStateOpen Then rs.Close
+    End If
+
+    Set rs = New ADODB.Recordset
+    rs.CursorLocation = adUseClient
+
+    rs.Open "SELECT MedID, MedName, Manufacturer, StockQty, " & _
+                  "IIF(StockQty <= 10, 'LOW', 'OK') AS AlertStatus " & _
+                  "FROM medicine_master ORDER BY MedName ASC", _
+                  cn, adOpenStatic, adLockReadOnly
+
+    If rs.EOF Then
+        MsgBox "No inventory records found.", vbInformation
+        Exit Sub
+    End If
+
+    Set DGReport.DataSource = rs
+    MsgBox "Inventory Report Loaded.", vbInformation
+
+End Sub
+
+Private Sub cmdLowStock_Click()
+    If Not rs Is Nothing Then
+        If rs.State = adStateOpen Then rs.Close
+    End If
+
+    Set rs = New ADODB.Recordset
+    rs.CursorLocation = adUseClient
+
+    rs.Open "SELECT MedID, MedName, Manufacturer, StockQty, " & _
+                  "IIF(StockQty <= 10, 'LOW', 'OK') AS AlertStatus " & _
+                  "FROM medicine_master " & _
+                  "WHERE StockQty <= 10 " & _
+                  "ORDER BY StockQty ASC", _
+                  cn, adOpenStatic, adLockReadOnly
+
+    If rs.EOF Then
+        MsgBox "No low stock medicines.", vbInformation
+        Exit Sub
+    End If
+
+    Set DGReport.DataSource = rs
+    MsgBox "Low Stock Report Loaded.", vbInformation
+
+End Sub
+
+'Print Codes
+Private Sub cmdMedicalCert_Click()
+    On Error GoTo PrintError
+    Dim PID As String
+
+    frmInputPID.PIDValue = ""
+    frmInputPID.Show vbModal
+
+    PID = frmInputPID.PIDValue
+    Unload frmInputPID
+
+    If PID = "" Then Exit Sub
+
+    Dim rsCert As New ADODB.Recordset
+    rsCert.Open "SELECT Name, Diagnosis FROM patient_master WHERE ID = " & PID, _
+                cn, adOpenStatic, adLockReadOnly
+
+    If rsCert.EOF Then
+        MsgBox "Patient not found.", vbCritical
+        rsCert.Close
+        Exit Sub
+    End If
+
+    Printer.FontSize = 14
+    Printer.FontBold = True
+    Printer.Print "                 MEDICAL CERTIFICATE"
+    Printer.Print ""
+    Printer.FontBold = False
+    Printer.FontSize = 10
+    Printer.Print "This is to certify that " & rsCert!Name & _
+                  " was examined on " & Format(Date, "mmmm dd, yyyy") & "."
+    Printer.Print ""
+    Printer.Print "Diagnosis: " & rsCert!Diagnosis
+    Printer.Print ""
+    Printer.Print "He/She is advised to take proper medication and rest."
+    Printer.Print ""
+    Printer.Print ""
+    Printer.Print "Physician Signature: ___________________________"
+    Printer.EndDoc
+    
+    MsgBox "Medical Certificate Printed Successfully!", vbInformation
+    rsCert.Close
+    Set rsCert = Nothing
+    Exit Sub
+    
+PrintError:
+    If Err.Number = 482 Then
+        MsgBox "Printing canceled by user.", vbInformation
+    Else
+        MsgBox "Printer error: " & Err.Description, vbCritical
+    End If
+    Err.Clear
+End Sub
+
+Private Sub cmdPrint_Click()
+    On Error GoTo PrintError
+    If rs Is Nothing Then
+        MsgBox "No report loaded.", vbExclamation
+        Exit Sub
+    End If
+
+    If rs.State <> adStateOpen Then
+        MsgBox "Report not available.", vbExclamation
+        Exit Sub
+    End If
+
+    If rs.EOF Then
+        MsgBox "Report is empty.", vbExclamation
+        Exit Sub
+    End If
+
+    If Printers.Count = 0 Then
+        MsgBox "No printer installed.", vbCritical
+        Exit Sub
+    End If
+
+    rs.MoveFirst
+    Printer.FontSize = 12
+    Printer.FontBold = True
+    Printer.Print "CLINIC REPORT"
+    Printer.FontBold = False
+    Printer.Print "Generated: " & Format(Now, "mmmm dd, yyyy hh:mm AM/PM")
+    Printer.Print String(100, "-")
+    Printer.Print ""
+
+    Dim field As Integer
+    Dim rowText As String
+
+    Do While Not rs.EOF
+
+        rowText = ""
+
+        For field = 0 To rs.Fields.Count - 1
+            rowText = rowText & rs.Fields(field).Name & ": " & _
+                      rs.Fields(field).Value & "   "
+        Next field
+
+        Printer.Print rowText
+        Printer.Print String(80, "-")
+
+        rs.MoveNext
+    Loop
+
+    Printer.EndDoc
+
+    MsgBox "Printing successful.", vbInformation
+    Exit Sub
+
+PrintError:
+    If Err.Number = 482 Then
+        MsgBox "Printing canceled by user.", vbInformation
+    Else
+        MsgBox "Printer error: " & Err.Description, vbCritical
+    End If
+    Err.Clear
+End Sub
+
+Private Sub cmdExportPDF_Click()
+    If rs Is Nothing Then
+        MsgBox "No report loaded.", vbExclamation
+        Exit Sub
+    End If
+
+    If rs.State <> adStateOpen Then
+        MsgBox "Report not available.", vbExclamation
+        Exit Sub
+    End If
+
+    If rs.EOF Then
+        MsgBox "Report is empty.", vbExclamation
+        Exit Sub
+    End If
+
+    Dim prt As Printer
+    Dim found As Boolean
+    found = False
+
+    For Each prt In Printers
+        If prt.DeviceName = "Microsoft Print to PDF" Then
+            Set Printer = prt
+            found = True
+            Exit For
+        End If
+    Next
+
+    If Not found Then
+        MsgBox "Microsoft Print to PDF not found.", vbCritical
+        Exit Sub
+    End If
+
+    Printer.ScaleMode = vbTwips
+    Printer.CurrentX = 1000
+    Printer.CurrentY = 1000
+
+    rs.MoveFirst
+    Printer.FontSize = 12
+    Printer.FontBold = True
+    Printer.Print "CLINIC REPORT"
+    Printer.FontBold = False
+    Printer.Print "Generated: " & Format(Now, "mmmm dd, yyyy hh:mm AM/PM")
+    Printer.Print String(100, "-")
+    Printer.Print ""
+
+    Dim field As Integer
+    Dim rowText As String
+    
+    Do While Not rs.EOF
+
+        rowText = ""
+
+        For field = 0 To rs.Fields.Count - 1
+            If IsNull(rs.Fields(field).Value) Then
+                rowText = rowText & ""
+            Else
+                rowText = rowText & rs.Fields(i).Value
+            End If
+
+            rowText = rowText & "    "
+        Next field
+
+        Printer.Print rowText
+        If Printer.CurrentY > Printer.ScaleHeight - 1000 Then
+            Printer.NewPage
+            Printer.CurrentX = 1000
+            Printer.CurrentY = 1000
+        End If
+
+        rs.MoveNext
+    Loop
+
+    Printer.EndDoc
+
+    MsgBox "PDF file generated. Please choose save location.", vbInformation
+
+End Sub
+
+Private Sub cmdClose_Click()
+    Unload Me
+End Sub

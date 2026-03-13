@@ -1,0 +1,180 @@
+'General
+Option Explicit
+
+Dim cn As ADODB.Connection
+Dim rs As ADODB.Recordset
+
+'Main Logic
+Private Sub Form_Load()
+    Set cn = New ADODB.Connection
+    cn.Open "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & _
+            App.Path & "\ClinicRecord.mdb"
+
+    txtMedID.Locked = True
+    ClearGrid
+End Sub
+
+'Helper Codes
+Private Sub Clear()
+    txtMedID.Text = ""
+    txtMedName.Text = ""
+    txtManufacturer.Text = ""
+    txtQty.Text = ""
+    txtAlertStatus.Text = ""
+
+    ClearGrid
+    
+End Sub
+
+Private Sub ClearGrid()
+
+    Set rs = New ADODB.Recordset
+    rs.Fields.Append "MedID", adInteger
+    rs.Fields.Append "MedName", adVarChar, 50
+    rs.Fields.Append "Manufacturer", adVarChar, 50
+    rs.Fields.Append "StockQty", adInteger
+    rs.Fields.Append "AlertStatus", adVarChar, 12
+    
+    rs.Open
+    
+    Set DGMedicine.DataSource = rs
+End Sub
+
+Public Sub LoadData()
+    Set rs = New ADODB.Recordset
+    rs.CursorLocation = adUseClient
+
+    rs.Open "SELECT MedID, MedName, Manufacturer, StockQty, " & _
+            "IIF(StockQty <= 10, 'LOW', 'OK') AS AlertStatus " & _
+            "FROM medicine_master ORDER BY MedID ASC", _
+            cn, adOpenStatic, adLockReadOnly
+
+    Set DGMedicine.DataSource = rs
+End Sub
+
+Private Sub DGMedicine_RowColChange(LastRow As Variant, ByVal LastCol As Integer)
+    If DGMedicine.ApproxCount = 0 Then Exit Sub
+
+    txtMedID.Text = DGMedicine.Columns(0).Text
+    txtMedName.Text = DGMedicine.Columns(1).Text
+    txtManufacturer.Text = DGMedicine.Columns(2).Text
+    txtQty.Text = DGMedicine.Columns(3).Text
+    txtAlertStatus.Text = DGMedicine.Columns(4).Text
+    If txtAlertStatus.Text = "LOW" Then
+        MsgBox "Warning: Stock for this medicine is LOW!", vbExclamation, "Low Stock Alert"
+    End If
+End Sub
+
+'Function Codes
+Private Function GetNextMedID() As Long
+    Set rs = New ADODB.Recordset
+
+    rs.CursorLocation = adUseClient
+    rs.Open "SELECT MAX(MedID) AS MaxID FROM medicine_master", cn, _
+              adOpenForwardOnly, adLockReadOnly
+
+    If rs.EOF Or IsNull(rs!MaxID) Then
+        GetNextMedID = 1
+    Else
+        GetNextMedID = rs!MaxID + 1
+    End If
+
+    rs.Close
+    Set rs = Nothing
+End Function
+
+'Navigation Codes
+Private Sub cmdAdd_Click()
+    frmOrderMedicine.txtMedID.Text = GetNextMedID
+    frmOrderMedicine.Show
+    Clear
+End Sub
+
+Private Sub cmdOrder_Click()
+    If txtMedID.Text = "" Then
+        MsgBox "Select a record first.", vbExclamation
+        Exit Sub
+    End If
+
+    frmOrderMedicine.txtMedID.Text = txtMedID.Text
+    frmOrderMedicine.txtMedName.Text = txtMedName.Text
+    frmOrderMedicine.txtMedName.Locked = True
+    frmOrderMedicine.txtManufacturer.Text = txtManufacturer.Text
+    frmOrderMedicine.txtManufacturer.Locked = True
+    Clear
+    frmOrderMedicine.Show vbModal
+End Sub
+
+Private Sub cmdDelete_Click()
+    If txtMedID.Text = "" Then
+        MsgBox "Select a record first.", vbExclamation
+        Exit Sub
+    End If
+
+    If MsgBox("Delete this medicine?", vbYesNo + vbCritical) = vbYes Then
+        cn.Execute "DELETE FROM medicine_master WHERE MedID=" & txtMedID.Text
+        MsgBox "Deleted successfully!", vbInformation
+         Clear
+        LoadData
+    End If
+End Sub
+
+Private Sub cmdUpdate_Click()
+    If txtMedID.Text = "" Then
+        MsgBox "Select a record first.", vbExclamation
+        Exit Sub
+    End If
+
+    If txtMedName.Locked = True Then
+        txtMedName.Locked = False
+        txtManufacturer.Locked = False
+        cmdUpdate.Default = True
+        MsgBox "You can now edit the fields. Press Enter/Escape to save/cancel changes. ", vbInformation
+        Exit Sub
+    End If
+
+    cn.Execute "UPDATE medicine_master SET " & _
+               "MedName='" & Replace(txtMedName.Text, "'", "''") & "', " & _
+               "Manufacturer='" & Replace(txtManufacturer.Text, "'", "''") & "' " & _
+               "WHERE MedID=" & txtMedID.Text
+
+    MsgBox "Record updated successfully!", vbInformation
+
+    txtMedName.Locked = True
+    txtManufacturer.Locked = True
+    cmdUpdate.Default = False
+    LoadData
+
+End Sub
+
+Private Sub cmdClear_Click()
+    Call Clear
+End Sub
+
+Private Sub cmdLoad_Click()
+    Call LoadData
+End Sub
+
+Private Sub cmdClose_Click()
+    Unload Me
+End Sub
+
+Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
+
+    If KeyCode = vbKeyEscape Then
+        
+        If txtMedName.Locked = False Then
+            
+            txtMedName.Text = DGMedicine.Columns(1).Text
+            txtManufacturer.Text = DGMedicine.Columns(2).Text
+            
+            txtMedName.Locked = True
+            txtManufacturer.Locked = True
+            
+            MsgBox "Edit cancelled.", vbInformation
+            
+        End If
+        
+    End If
+
+End Sub
